@@ -97,16 +97,19 @@ public class CaidenRobot {
     
     
     private static int ELEVATOR_HEIGHT = 900 / 5 * 12;
+
     int SAVED_ELEVATOR_POS = 0;
     int SAVED_LAZY_POS = 0;
-    public final int rightLimit = -1450;
-    public final int leftLimit = 1390;
+    public final int rightLimit = -1450 / 60 * 20;
+    public final int leftLimit = 440;
     double driveSpeedMultiplier = 1;
     
     private int shortHeight = 85 / 3 * 12;
     private int medHeight = 268 / 3 * 12;
     private int targetElevatorPosition = 0;
-    
+    private int targetTurretPosition = 0;
+
+
     public CaidenRobot(HardwareMap hardwareMap) {
         this(hardwareMap, true);
     }
@@ -209,7 +212,9 @@ public class CaidenRobot {
         LazySohum.setPower(0);
         Jorj.setPower(0);
     }
-    
+    public int turretDisplacement(){
+        return Math.abs(LazySohum.getCurrentPosition() - LazySohum.getTargetPosition());
+    }
     public void setHeadlightPower(double power) {
          headlight.setPosition(power);
     }
@@ -249,7 +254,7 @@ public class CaidenRobot {
             //double elevatorPower = 0;
             Slidey.setPower(elevatorPower);
             Slidey2.setPower(elevatorPower);
-        } else if((power < 0) && (Slidey.getCurrentPosition() > 8)) {
+        } else if((power < 0) && (Slidey.getCurrentPosition() >= 0)) {
             stopElevator = false;
             double elevatorPower = Range.clip(elevatorController.calculate(Slidey.getCurrentPosition(), 20), -0.7, 0);
             //double elevatorPower = -0.53;
@@ -286,36 +291,55 @@ public class CaidenRobot {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(leftLimit);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.8);
+            LazySohum.setPower(0.4);
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
             targetElevatorPosition = SAFE_ELEVATOR_POSITION + 60;
         } else {
             LazySohum.setPower(0);
         }
+        if (300 < LazySohum.getCurrentPosition() && LazySohum.getPower() == 0){
+            LazySohum.setTargetPosition(leftLimit);
+            LazySohum.setMode(RunMode.RUN_TO_POSITION);
+            LazySohum.setPower(0.4);
+            driveElevator(-1);
+        }
+
     }
     public void lazyR () {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(rightLimit);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.8);
+            LazySohum.setPower(0.4);
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
             targetElevatorPosition = SAFE_ELEVATOR_POSITION + 60;
         } else {
             LazySohum.setPower(0);
+        }
+        if (LazySohum.getCurrentPosition() < -300 && LazySohum.getPower() == 0){
+            LazySohum.setTargetPosition(rightLimit);
+            LazySohum.setMode(RunMode.RUN_TO_POSITION);
+            LazySohum.setPower(0.4);
+            driveElevator(-1);
         }
     }
     public void lazyS(){
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(0);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.8);
+            LazySohum.setPower(0.4);
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
             targetElevatorPosition = SAFE_ELEVATOR_POSITION + 60;
         } else {
             LazySohum.setPower(0);
+        }
+        if (-100 < LazySohum.getCurrentPosition() && LazySohum.getCurrentPosition() < 100 && LazySohum.getPower() == 0){
+            LazySohum.setTargetPosition(0);
+            LazySohum.setMode(RunMode.RUN_TO_POSITION);
+            LazySohum.setPower(0.4);
+            driveElevator(-1);
         }
     }   
     
@@ -338,7 +362,13 @@ public class CaidenRobot {
         position = Range.clip(position, 6, ELEVATOR_HEIGHT);
         targetElevatorPosition = position;
     }
-    
+    public void updateTurretTargetPosition(int position){
+        position = Range.clip(position, rightLimit, leftLimit);
+        targetTurretPosition = position;
+        if(turretDisplacement() > 3){
+
+        }
+    }
     public int getElevatorPosition(){
         return Slidey.getCurrentPosition();
     }

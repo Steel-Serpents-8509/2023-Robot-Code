@@ -35,7 +35,7 @@ public class TestTeleop extends OpMode {
         int shortHeight = 915;
         int medHeight = 1575;
         int topHeight = 1575;
-        
+
         boolean strafe1;
         boolean strafe2;
         boolean raise;
@@ -188,7 +188,7 @@ public class TestTeleop extends OpMode {
             
         }
         if (first){
-            caiden.updateElevatorTargetPosition(50);
+            caiden.updateElevatorTargetPosition(25);
             saveRaise = true;
         }
         if (second){
@@ -263,7 +263,8 @@ public class TestTeleop extends OpMode {
         telemetry.addData("Headlight Power", headlightPower);
         telemetry.addData("Heading Difference", headingDifference);
         telemetry.addData("Heading Difference Sign", headingDifferenceSign);
-        
+        telemetry.addData("Error in turret", caiden.turretDisplacement());
+
         caiden.updateTelemetry(telemetry);
         telemetry.addData("Loop Time", loopTime.milliseconds());
         loopTime.reset();
