@@ -509,9 +509,9 @@ public class CaidenRobot {
     
     PIDFController armController = new PIDFController(0.5, 0.02, 0, 0);
     
-    static final double MAX_ARM_VOLTAGE = .68;
+    static final double MAX_ARM_VOLTAGE = .78;
     static final double SAFE_VOLTAGE = 2.1;
-    static final double MIN_ARM_VOLTAGE = 2.53;
+    static final double MIN_ARM_VOLTAGE = 2.63;
     double savedArmPosition = MIN_ARM_VOLTAGE;
     boolean armMoving = false;
     boolean armPIDEnabled = true;
