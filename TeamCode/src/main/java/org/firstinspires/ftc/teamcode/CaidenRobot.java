@@ -232,7 +232,7 @@ public class CaidenRobot {
     public void disableHeadlight() {
         headlightVoltage.setPower(0);
     }
-    
+
     public double getDistance() {
         return distr.getDistance(DistanceUnit.CM);
     }
