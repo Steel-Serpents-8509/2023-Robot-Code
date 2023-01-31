@@ -2,10 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
-import com.qualcomm.robotcore.hardware.ServoImpl;
-import com.qualcomm.robotcore.hardware.PWMOutputImpl;
-import com.qualcomm.robotcore.hardware.PWMOutput;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.util.Range;
@@ -14,9 +13,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -38,6 +35,11 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.controller.PIDController;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BooleanSupplier;
+
 public class CaidenRobot {
     
     // The IMU sensor object
@@ -50,18 +52,18 @@ public class CaidenRobot {
     private double robotHeading  = 0;
     private double headingOffset = 0;
     private double headingError  = 0;
-    
-    private DcMotorEx BRMotor;
-    private DcMotorEx BLMotor;
-    private DcMotorEx FRMotor;
-    private DcMotorEx FLMotor;
+
+    private final DcMotorEx BRMotor;
+    private final DcMotorEx BLMotor;
+    private final DcMotorEx FRMotor;
+    private final DcMotorEx FLMotor;
     
     private DcMotor headlightVoltage;
     
-    private PIDDriveMotor FRDrive;
-    private PIDDriveMotor FLDrive;
-    private PIDDriveMotor BRDrive;
-    private PIDDriveMotor BLDrive;
+    private final PIDDriveMotor FRDrive;
+    private final PIDDriveMotor FLDrive;
+    private final PIDDriveMotor BRDrive;
+    private final PIDDriveMotor BLDrive;
     
     private final double driveMotorP = 0.1;
     private final double driveMotorI = 0;
@@ -71,7 +73,7 @@ public class CaidenRobot {
     private PIDFController FLDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
     private PIDFController BRDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
     private PIDFController BLDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
-    
+
     private DcMotor LazySohum;
     private CRServo Jorj;
     private DistanceSensor distr;
@@ -109,6 +111,9 @@ public class CaidenRobot {
     private int targetElevatorPosition = 0;
     private int targetTurretPosition = 0;
 
+    private AtomicBoolean robotRunningFlag = new AtomicBoolean(true);
+    private AtomicReference<Double> elevatorPowerAtomic = new AtomicReference<>(0.0);
+    private AtomicInteger elevatorPositionAtomic = new AtomicInteger(0);
 
     public CaidenRobot(HardwareMap hardwareMap) {
         this(hardwareMap, true);
@@ -123,7 +128,7 @@ public class CaidenRobot {
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
+        parameters.loggingEnabled      = false;
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
@@ -143,13 +148,12 @@ public class CaidenRobot {
         BLMotor = hardwareMap.get(DcMotorEx.class, "BLMotor");
         FRMotor = hardwareMap.get(DcMotorEx.class, "FRMotor");
         FLMotor = hardwareMap.get(DcMotorEx.class, "FLMotor");
-        headlightVoltage = hardwareMap.get(DcMotor.class, "headlightVoltage");
-        
+
         FRDrive = new PIDDriveMotor(FRMotor, FRDriveController);
         FLDrive = new PIDDriveMotor(FLMotor, FLDriveController);
         BRDrive = new PIDDriveMotor(BRMotor, BRDriveController);
         BLDrive = new PIDDriveMotor(BLMotor, BLDriveController);
-        
+
         Slidey = hardwareMap.get(DcMotorEx.class, "Slidey");
         Slidey2 = hardwareMap.get(DcMotorEx.class, "Slidey2");
         LazySohum = hardwareMap.get(DcMotor.class, "Lazy_Sohum");
@@ -186,9 +190,8 @@ public class CaidenRobot {
         
         Slidey.setMode(RunMode.RUN_WITHOUT_ENCODER);
         Slidey2.setMode(RunMode.RUN_WITHOUT_ENCODER);
-        
-        headlightVoltage.setMode(RunMode.RUN_WITHOUT_ENCODER);
-        headlightVoltage.setPower(0);
+
+
         
         
         
@@ -201,7 +204,10 @@ public class CaidenRobot {
         //revDistanceSensor = hardwareMap.get(DistanceSensor.class, "revDistance");
         
     }
-    
+
+    public void finish() {
+        robotRunningFlag.set(false);
+    }
     public void stop() {
         BRMotor.setPower(0);
         BLMotor.setPower(0);
@@ -240,39 +246,47 @@ public class CaidenRobot {
     }
     
     public void driveElevator(double power) {
-        
-        if(targetElevatorPosition < 60 && Slidey.getCurrentPosition() < 60 && power == 0) {
-            double elevatorPower = 0.00;
-            Slidey.setPower(elevatorPower);
-            Slidey2.setPower(elevatorPower);
+
+        int elevatorPosition = getElevatorPosition();
+
+        if(targetElevatorPosition < 10 && elevatorPosition < 10 && power == 0) {
+            elevatorPowerAtomic.set(0.0);
         } else if(power == 0) {
             if (!stopElevator){
                 stopElevator = true;
-                targetElevatorPosition = Slidey.getCurrentPosition();
+                targetElevatorPosition = elevatorPosition;
             }            
-            double elevatorPower = Range.clip(elevatorController.calculate(Slidey.getCurrentPosition(), targetElevatorPosition), -.6, .7);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.6, .7);
             //double elevatorPower = 0;
             Slidey.setPower(elevatorPower);
             Slidey2.setPower(elevatorPower);
-        } else if((power < 0) && (Slidey.getCurrentPosition() >= 0)) {
+        } else if((power < 0) && (elevatorPosition > 8)) {
             stopElevator = false;
-            double elevatorPower = Range.clip(elevatorController.calculate(Slidey.getCurrentPosition(), 20), -0.7, 0);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, 20), -0.7, 0);
             //double elevatorPower = -0.53;
-            Slidey.setPower(elevatorPower);
-            Slidey2.setPower(elevatorPower);
+            elevatorPowerAtomic.set(elevatorPower);
         } else if (power > 0) {
             stopElevator = false;
-            double elevatorPower = Range.clip(elevatorController.calculate(Slidey.getCurrentPosition(), ELEVATOR_HEIGHT), -0.3, .7);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, ELEVATOR_HEIGHT), -0.3, .7);
             //double elevatorPower = 0;
-            Slidey.setPower(elevatorPower);
-            Slidey2.setPower(elevatorPower);
+            elevatorPowerAtomic.set(elevatorPower);
         }
+
+        Slidey.setPower(elevatorPowerAtomic.get());
+        Slidey2.setPower(elevatorPowerAtomic.get());
+
+
     }
     
     public void goToElevatorPosition(int position) {
-        targetElevatorPosition = Range.clip(position, 10, ELEVATOR_HEIGHT);
+        targetElevatorPosition = Range.clip(position, 0, ELEVATOR_HEIGHT);
         driveElevator(0);
-        //double elevatorPower = Range.clip(elevatorController.calculate(Slidey.getCurrentPosition(), targetElevatorPosition), -0.6, 0.7);
+
+        //elevatorPowerAtomic.set(Range.clip(elevatorController.calculate(getElevatorPosition(), targetElevatorPosition), -0.6, 0.7));
+
+
+        //Slidey.setPower(elevatorPowerAtomic.get());
+        //Slidey2.setPower(elevatorPowerAtomic.get());
         //Slidey.setPower(elevatorPower);
         //Slidey2.setPower(elevatorPower);
     }
@@ -280,7 +294,7 @@ public class CaidenRobot {
     // Is it safe to move the turret?
     public static final int SAFE_ELEVATOR_POSITION = 144;
     public boolean safeToMoveTurret() {
-        return Slidey.getCurrentPosition() > SAFE_ELEVATOR_POSITION || Pot.getVoltage() < SAFE_VOLTAGE;
+        return getElevatorPosition() > SAFE_ELEVATOR_POSITION || Pot.getVoltage() < SAFE_VOLTAGE;
     }
     
     public void stopArm() {
@@ -341,7 +355,7 @@ public class CaidenRobot {
             LazySohum.setPower(0.4);
             driveElevator(-1);
         }
-    }   
+    }
     
     public void lazyGoToPosition(int position) {
         position = Range.clip(position, leftLimit, rightLimit);
@@ -370,17 +384,18 @@ public class CaidenRobot {
         }
     }
     public int getElevatorPosition(){
-        return Slidey.getCurrentPosition();
+        return elevatorPositionAtomic.get();
     }
-    
-    private int ELEVATOR_TOLERANCE = 30;
+
     public boolean elevatorIsInPosition() {
-        return Slidey.getCurrentPosition() > (targetElevatorPosition - ELEVATOR_TOLERANCE) && 
-            Slidey.getCurrentPosition() < (targetElevatorPosition + ELEVATOR_TOLERANCE);
+        double elevatorPosition = getElevatorPosition();
+        final int ELEVATOR_TOLERANCE = 90;
+        return elevatorPosition > (targetElevatorPosition - ELEVATOR_TOLERANCE) &&
+                elevatorPosition < (targetElevatorPosition + ELEVATOR_TOLERANCE);
     }
     
     public void driveRawPower(double frontRightPower, double frontLeftPower, double backRightPower, double backLeftPower) {
-        if(Slidey.getCurrentPosition() >= 1700) {
+        if(getElevatorPosition() >= 1700) {
             driveSpeedMultiplier = 0.5;
         } else {
             driveSpeedMultiplier = 1;
@@ -392,7 +407,7 @@ public class CaidenRobot {
     }
     
     public void driveMotors(double frontRightPower, double frontLeftPower, double backRightPower, double backLeftPower) {
-        if(Slidey.getCurrentPosition() >= 700) {
+        if(getElevatorPosition() >= 700) {
             driveSpeedMultiplier = 0.5;
         } else {
             driveSpeedMultiplier = 1;
@@ -557,18 +572,19 @@ public class CaidenRobot {
         //telemetry.addData("FRcount", FRMotor.getCurrentPosition());
         telemetry.addData("FRcount", FRMotor.getCurrentPosition());
         //telemetry.addData("FLcount", FLMotor.getCurrentPosition());
-        telemetry.addData("Elevator", Slidey.getCurrentPosition());
-        telemetry.addData("Turret", LazySohum.getCurrentPosition());
-        telemetry.addData("SOHUM IS LAZY", LazySohum.getCurrentPosition());
+        elevatorPositionAtomic.set(Slidey.getCurrentPosition());
+        telemetry.addData("Elevator Position", getElevatorPosition());
+        telemetry.addData("Elevator power", elevatorPowerAtomic.get());
+        //telemetry.addData("Turret", LazySohum.getCurrentPosition());
         //telemetry.addData("Magnet", Magnet.getValue());
         telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
-        telemetry.addData("Servo Pow", Jorj.getPower());
-        telemetry.addData("Where is the Pot", Pot.getVoltage());
+        //telemetry.addData("Servo Pow", Jorj.getPower());
+        //telemetry.addData("Where is the Pot", Pot.getVoltage());
         telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
         telemetry.addData("arm desired pos", armPosition);
-        telemetry.addData("Red", colorSensor.red());
-        telemetry.addData("Blue", colorSensor.blue());
-        telemetry.addData("Green", colorSensor.green());
+        //telemetry.addData("Red", colorSensor.red());
+        //telemetry.addData("Blue", colorSensor.blue());
+        //telemetry.addData("Green", colorSensor.green());
         telemetry.addData("driveSpeedMultiplier", driveSpeedMultiplier);
 
         

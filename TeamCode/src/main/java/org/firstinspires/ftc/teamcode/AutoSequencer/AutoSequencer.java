@@ -43,6 +43,7 @@ public class AutoSequencer<T extends StageState> {
     }
     
     public void reset() {
+        started = false;
         stages.clear();
     }
     

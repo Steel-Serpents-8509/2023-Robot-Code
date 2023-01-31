@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.competition;
 
+import android.view.ViewDebug;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -56,9 +58,7 @@ public class ConePlaceAuto extends LinearOpMode {
     
     //                          cone5,  cone4, etc
     int coneHeight[] =       {160,  140, 105, 70,  35};
-    //double robotDistance[] =    {25, 23,    21,  14.2,  12.4}; 
-    int currentCone = 0;
-    int maxCone = 1;
+    //double robotDistance[] =    {25, 23,    21,  14.2,  12.4};
     ElapsedTime loopTime = new ElapsedTime();
     
     @Override
@@ -69,7 +69,10 @@ public class ConePlaceAuto extends LinearOpMode {
         
         caiden = new CaidenRobot(hardwareMap);
         AutoStages.state.caiden = caiden;
-        AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/black_shapes_good_videos.tflite");
+        vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
+        AutoStages.state.vision = vision;
+        //AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_original_sleeve_model.tflite");
+        AutoStages.state.telemetry = telemetry;
         
         AutoStages.sequencer.setDoNothingStage(new Stage<>((state) -> caiden.stop()));
         
@@ -94,15 +97,45 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.lowerConeOntoPole)
         .nextStage(AutoStages.openClaw)
         .nextStage(AutoStages.clearLowGoal)
-        .nextStage(AutoStages.goBackToConeStack);
-        
-        
+        .nextStage(AutoStages.goBackToConeStack)
+        .nextStage(AutoStages.approachConeStack);
+
+        AutoStages.goToZone1.nextStage(AutoStages.backupIntoZoneSlightly);
+        AutoStages.goToZone2.nextStage(AutoStages.backupIntoZoneSlightly);
+        AutoStages.goToZone3.nextStage(AutoStages.backupIntoZoneSlightly);
+
+        AutoStages.liftElevatorToClearConeStack.setNextStageFunction((state) -> {
+            if(state.currentCone >= state.maxCone) {
+                return AutoStages.goToZone.getId();
+            } else {
+                return AutoStages.backupToShortPole.getId();
+            }
+        });
+
+        /*
         AutoStages.goBackToConeStack.setNextStageFunction((state) -> {
             if(state.currentCone >= state.maxCone) {
-                return -100;
+                return AutoStages.goToZone.getId();
             } else {
                 return AutoStages.approachConeStack.getId();
             }
+        });*/
+
+        AutoStages.goToZone.setNextStageFunction((state) -> {
+            int ret;
+            switch (state.recognizedSignal) {
+                case "circle":
+                    ret = AutoStages.goToZone1.getId();
+                    break;
+                case "triangle":
+                    ret = AutoStages.goToZone3.getId();
+                    break;
+                case "square":
+                case "":
+                default:
+                    ret = AutoStages.goToZone2.getId();
+            }
+            return ret;
         });
         
         AutoStages.sequencer.addStage(AutoStages.closeClawOnPreloadCone);
@@ -123,24 +156,29 @@ public class ConePlaceAuto extends LinearOpMode {
         AutoStages.sequencer.addStage(AutoStages.openClaw);
         AutoStages.sequencer.addStage(AutoStages.clearLowGoal);
         AutoStages.sequencer.addStage(AutoStages.goBackToConeStack);
+        AutoStages.sequencer.addStage(AutoStages.goToZone);
+        AutoStages.sequencer.addStage(AutoStages.goToZone1);
+        AutoStages.sequencer.addStage(AutoStages.goToZone2);
+        AutoStages.sequencer.addStage(AutoStages.goToZone3);
+        AutoStages.sequencer.addStage(AutoStages.backupIntoZoneSlightly);
         
-        
-        //caiden.enableHeadlight();
-        //caiden.setHeadlightPower(0.14);
-        
-        //vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/black_shapes_good_videos.tflite");
+
         //vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/original_sleeve_good_data.tflite");
-        AutoStages.state.forwardController.setTolerance(30);
-        AutoStages.state.strafeController.setTolerance(30);
-        AutoStages.state.anglePID.setTolerance(2);
-        AutoStages.state.rangeSensorController.setTolerance(2.2);
+        //vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
+        RobotAutoState.forwardController.setTolerance(30);
+        RobotAutoState.strafeController.setTolerance(40);
+        RobotAutoState.anglePID.setTolerance(2);
+        RobotAutoState.rangeSensorController.setTolerance(2.2);
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Stage ID", AutoStages.closeClawOnPreloadCone.getId());
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
+        caiden.enableHeadlight();
+        caiden.setHeadlightPower(0.06);
         waitForStart();
-        
-        
+        caiden.closeClaw();
+
+
         //recognizeSignalZone();
         //caiden.disableHeadlight();
         //caiden.setHeadlightPower(0);
@@ -166,6 +204,8 @@ public class ConePlaceAuto extends LinearOpMode {
         telemetry.addData("Recognized Signal", AutoStages.state.recognizedSignal);
         telemetry.addData("Seeing Line", AutoStages.seeingConeLine());
         telemetry.addData("Seen Line", AutoStages.state.seenConeLine);
+        telemetry.addData("Current Cone", AutoStages.state.currentCone);
+        telemetry.addData("Max Cone", AutoStages.state.maxCone);
         caiden.updateTelemetry(telemetry);
         telemetry.addData("Loop Time", loopTime.milliseconds());
         loopTime.reset();

@@ -165,21 +165,11 @@ public class TestingAuto extends LinearOpMode {
         telemetry.addData("Seeing Line", AutoStages.seeingConeLine());
         telemetry.addData("Seen Line", AutoStages.state.seenConeLine);
         caiden.updateTelemetry(telemetry);
-        telemetry.update();
-    }
-    
-    public void postTelemetry() {
-        
-        caiden.updateTelemetry(telemetry);
-        //telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
         if(vision != null) {
             vision.updateTelemetry(telemetry);
         }
         telemetry.update();
     }
-    
-    
-    
 }
     
 

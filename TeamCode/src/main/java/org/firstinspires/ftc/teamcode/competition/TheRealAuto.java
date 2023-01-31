@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.competition;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -16,51 +17,56 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.AutoStages;
 import org.firstinspires.ftc.teamcode.CustomVision;
 import org.firstinspires.ftc.teamcode.CaidenRobot;
 
 @Autonomous(name = "TheRealAuto")
 public class TheRealAuto extends LinearOpMode {
 
-    
+
     private CustomVision vision;
-    private String recognizedSignal; 
+    private String recognizedSignal;
     private CaidenRobot caiden;
- 
-    
-    @Override 
+    private ElapsedTime elapsedTime = new ElapsedTime();
+
+
+    @Override
     public void runOpMode() {
-        
+
         caiden = new CaidenRobot(hardwareMap);
-        vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/black_shapes_good_videos.tflite");
+        vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
+        //vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_original_sleeve_model.tflite");
         caiden.enableHeadlight();
-        caiden.setHeadlightPower(0.06);
-         
-        
-      
-      
-          // Wait for the game to start (Display Gyro value while waiting)
+        caiden.setHeadlightPower(0.1);
+
+
+
+
+        // Wait for the game to start (Display Gyro value while waiting)
         while (opModeInInit()) {
             postTelemetry();
         }
-        
-        
-     
+
+
+
         waitForStart();
         caiden.reset();
-        
+        elapsedTime.reset();
+
         // Find zone
         recognizeSignalZone();
-        
+
         caiden.disableHeadlight();
         caiden.setHeadlightPower(0);
-        
+
         // Go to zone
         goToZone();
-         
-     }
-     
-     public void goToZone() {
+
+    }
+
+    public void goToZone() {
         telemetry.addData("Recognized Signal", recognizedSignal);
         postTelemetry();
         switch(recognizedSignal) {
@@ -78,62 +84,97 @@ public class TheRealAuto extends LinearOpMode {
                 telemetry.addData("Error", "Signal not accounted for :(");
         }
     }
-     
+
     // strafe left, move forward
     private void goToZone1() {
         caiden.goToStrafePosition(2350);
         while(caiden.isBusy()){
+            caiden.goToElevatorPosition(915);
             postTelemetry();
-            idle();  
+            idle();
         }
         caiden.stop();
         caiden.reset();
-        
+
         caiden.goToForwardPosition(2400);
         while(caiden.isBusy()){
+            caiden.goToElevatorPosition(915);
             postTelemetry();
-            idle();  
+            idle();
         }
         caiden.stop();
         caiden.reset();
+
+        while (opModeIsActive()) {
+            caiden.goToElevatorPosition(0);
+            postTelemetry();
+        }
+
+
     }
-    
+
     // move forward
     private void goToZone2() {
+        caiden.goToForwardPosition(3000);
+        while(caiden.isBusy()){
+            caiden.goToElevatorPosition(915);
+            postTelemetry();
+            idle();
+        }
+
         caiden.goToForwardPosition(2400);
         while(caiden.isBusy()){
+            caiden.goToElevatorPosition(915);
             postTelemetry();
-            idle();  
+            idle();
         }
         caiden.stop();
         caiden.reset();
-        
+
+        while (opModeIsActive()) {
+            caiden.goToElevatorPosition(0);
+            postTelemetry();
+        }
     }
-    
+
     // strafe right, move forward
     private void goToZone3() {
         caiden.goToStrafePosition(-2350);
         while(caiden.isBusy()){
+            caiden.goToElevatorPosition(915);
             postTelemetry();
-            idle();  
+            idle();
         }
         caiden.stop();
         caiden.reset();
-        
+
         caiden.goToForwardPosition(2400);
-        while(caiden.isBusy()){
+        while(caiden.isBusy()) {
+            caiden.goToElevatorPosition(915);
             postTelemetry();
-            idle();  
+            idle();
         }
         caiden.stop();
         caiden.reset();
-    }
-   
-    public void recognizeSignalZone() {
         while (opModeIsActive()) {
+            caiden.goToElevatorPosition(0);
+            postTelemetry();
+        }
+    }
+
+    public void recognizeSignalZone() {
+        while (opModeIsActive() && elapsedTime.milliseconds() < 15000) {
+
+            if(elapsedTime.milliseconds() < 1000) {
+                caiden.closeClaw();
+            } else {
+                caiden.closeClaw();
+                caiden.goToElevatorPosition(915);
+            }
+
             List<Recognition> recognizedObjects = vision.lookForObject();
             telemetry.addData("# Objects Detected", recognizedObjects.size());
-            
+
             // step through the list of recognitions and display image position/size information for each one
             // Note: "Image number" refers to the randomized image orientation/number
             for (Recognition recognition : recognizedObjects) {
@@ -151,15 +192,16 @@ public class TheRealAuto extends LinearOpMode {
                 recognizedSignal = recognizedObjects.get(0).getLabel();
                 break;
             }
-            
+
             postTelemetry();
         }
     }
-    
-    
-  //  @Override
+
+
+    //  @Override
     public void postTelemetry() {
-        
+
+        telemetry.addData("Elapsed Time", elapsedTime.milliseconds());
         caiden.updateTelemetry(telemetry);
         //telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
         if(vision != null) {
@@ -167,7 +209,7 @@ public class TheRealAuto extends LinearOpMode {
         }
         telemetry.update();
     }
-    
+
     /**
      * read the raw (un-offset Gyro heading) directly from the IMU
      */
