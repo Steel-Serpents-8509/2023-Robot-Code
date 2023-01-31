@@ -193,8 +193,33 @@ public class CaidenRobot {
 
 
         
-        
-        
+        /*Thread elevatorThread = new Thread(() -> {
+            DcMotorEx Slidey = hardwareMap.get(DcMotorEx.class, "Slidey");
+            DcMotorEx Slidey2 = hardwareMap.get(DcMotorEx.class, "Slidey2");
+            Slidey.setDirection(DcMotorSimple.Direction.REVERSE);
+            Slidey2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+            if(resetMotors) {
+                Slidey.setMode(RunMode.STOP_AND_RESET_ENCODER);
+                Slidey2.setMode(RunMode.STOP_AND_RESET_ENCODER);
+            }
+
+            Slidey.setMode(RunMode.RUN_WITHOUT_ENCODER);
+            Slidey2.setMode(RunMode.RUN_WITHOUT_ENCODER);
+
+            while(stopRobot.getAsBoolean()) {
+                double power = elevatorPowerAtomic.get();
+                Slidey.setPower(power);
+                Slidey2.setPower(power);
+                elevatorPositionAtomic.set(Slidey.getCurrentPosition());
+            }
+
+            Slidey.setPower(0);
+            Slidey2.setPower(0);
+
+        });
+
+        elevatorThread.start();*/
         /*
          *  Other Sensors
          */
