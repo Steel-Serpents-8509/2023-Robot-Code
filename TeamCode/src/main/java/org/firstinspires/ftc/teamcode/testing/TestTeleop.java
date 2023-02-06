@@ -213,10 +213,10 @@ public class TestTeleop extends OpMode {
         }
         //linear slide
         if (raise){
-            caiden.driveElevator(0.1);
+            caiden.driveElevator(0.5);
         }
         else if (lower){
-            caiden.driveElevator(-0.1);
+            caiden.driveElevator(-0.5);
         }
         //Pinchy
         if (open){

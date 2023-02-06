@@ -89,7 +89,7 @@ public class CaidenRobot {
     
     public DcMotorEx Slidey;
     private DcMotorEx Slidey2;
-    PIDController elevatorController = new PIDController(0.019, 0.0028, 0.0000);
+    PIDController elevatorController = new PIDController(1, 0.00, 0.0000);
     //PIDController elevatorController = new PIDController(0.01, 0.005, 0.0);
     //public TouchSensor Magnet;
     DistanceSensor distanceSensor;
@@ -280,7 +280,7 @@ public class CaidenRobot {
                 stopElevator = true;
                 targetElevatorPosition = elevatorPosition;
             }            
-            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.6, .7);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -1, 1);
             //double elevatorPower = 0;
             Slidey.setPower(elevatorPower);
             Slidey2.setPower(elevatorPower);
