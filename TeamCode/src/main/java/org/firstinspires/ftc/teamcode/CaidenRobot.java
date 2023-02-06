@@ -169,6 +169,10 @@ public class CaidenRobot {
 
         BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        Slidey.setDirection(DcMotorSimple.Direction.REVERSE);
+        Slidey2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
         
         
         if(resetMotors) {
