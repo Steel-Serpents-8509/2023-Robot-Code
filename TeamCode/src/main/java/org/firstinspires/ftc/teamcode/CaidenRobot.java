@@ -284,7 +284,7 @@ public class CaidenRobot {
                 stopElevator = true;
                 targetElevatorPosition = elevatorPosition;
             }            
-            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -1, 1);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.6, .7);
             //double elevatorPower = 0;
             Slidey.setPower(elevatorPower);
             Slidey2.setPower(elevatorPower);
