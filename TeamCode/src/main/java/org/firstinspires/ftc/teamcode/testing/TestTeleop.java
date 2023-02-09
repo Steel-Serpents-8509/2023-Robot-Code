@@ -286,5 +286,6 @@ public class TestTeleop extends OpMode {
     public void loop() {
         moveDriveTrain();
         sendTelemetry();
+        caiden.updateTelemetry(telemetry);
     }
 }
