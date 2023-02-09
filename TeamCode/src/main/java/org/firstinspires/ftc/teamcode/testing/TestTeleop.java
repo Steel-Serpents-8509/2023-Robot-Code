@@ -32,9 +32,9 @@ public class TestTeleop extends OpMode {
     double pivot = 0;
     int heading = 0;
     double headlightPower = 0;
-    int shortHeight = 915;
+    int shortHeight = 935;
     int medHeight = 1575;
-    int topHeight = 1575;
+    int topHeight = 2160;
 
     boolean strafe1;
     boolean strafe2;
@@ -266,14 +266,14 @@ public class TestTeleop extends OpMode {
 
     private void sendTelemetry() {
 
-        telemetry.addData("PID Enabled", enablePID);
+        //telemetry.addData("PID Enabled", enablePID);
         telemetry.addData("SetHeading", heading);
         telemetry.addData("Headlight Power", headlightPower);
         telemetry.addData("Heading Difference", headingDifference);
         telemetry.addData("Heading Difference Sign", headingDifferenceSign);
         telemetry.addData("Heading Adjustment", headingAdjustment);
 
-        telemetry.addData("Error in turret", caiden.turretDisplacement());
+        //telemetry.addData("Error in turret", caiden.turretDisplacement());
 
         caiden.updateTelemetry(telemetry);
         telemetry.addData("Loop Time", loopTime.milliseconds());
