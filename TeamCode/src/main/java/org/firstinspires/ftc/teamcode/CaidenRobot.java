@@ -89,7 +89,7 @@ public class CaidenRobot {
     
     public DcMotorEx Slidey;
     private DcMotorEx Slidey2;
-    PIDController elevatorController = new PIDController(.015, 0.0028, 0.0000);
+    PIDController elevatorController = new PIDController(1, 0.00, 0.0000);
     //PIDController elevatorController = new PIDController(0.01, 0.005, 0.0);
     //public TouchSensor Magnet;
     DistanceSensor distanceSensor;
@@ -277,33 +277,31 @@ public class CaidenRobot {
 
         int elevatorPosition = getElevatorPosition();
 
-        if(targetElevatorPosition < 10 && Slidey.getCurrentPosition() < 10 && power == 0) {
-            //elevatorPowerAtomic.set(0.0);
+        if(targetElevatorPosition < 10 && elevatorPosition < 10 && power == 0) {
+            elevatorPowerAtomic.set(0.0);
         } else if(power == 0) {
             if (!stopElevator){
                 stopElevator = true;
-                targetElevatorPosition = Slidey.getCurrentPosition();
+                targetElevatorPosition = elevatorPosition;
             }            
-            double elevatorPower = Range.clip(elevatorController.calculate(Slidey.getCurrentPosition(), targetElevatorPosition), -.6, .7);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.6, .7);
             //double elevatorPower = 0;
             Slidey.setPower(elevatorPower);
             Slidey2.setPower(elevatorPower);
-        } else if((power < 0) && (Slidey.getCurrentPosition() > 8)) {
+        } else if((power < 0) && (elevatorPosition > 8)) {
             stopElevator = false;
-            double elevatorPower = Range.clip(elevatorController.calculate(Slidey.getCurrentPosition(), 20), -0.7, 0);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, 20), -0.7, 0);
             //double elevatorPower = -0.53;
-            Slidey.setPower(elevatorPower);
-            Slidey2.setPower(elevatorPower);
+            elevatorPowerAtomic.set(elevatorPower);
         } else if (power > 0) {
             stopElevator = false;
-            double elevatorPower = Range.clip(elevatorController.calculate(Slidey.getCurrentPosition(), ELEVATOR_HEIGHT), -0.3, .7);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, ELEVATOR_HEIGHT), -0.3, .7);
             //double elevatorPower = 0;
-            Slidey.setPower(elevatorPower);
-            Slidey2.setPower(elevatorPower);
+            elevatorPowerAtomic.set(elevatorPower);
         }
 
-        //Slidey.setPower(elevatorPowerAtomic.get());
-        //Slidey2.setPower(elevatorPowerAtomic.get());
+        Slidey.setPower(elevatorPowerAtomic.get());
+        Slidey2.setPower(elevatorPowerAtomic.get());
 
 
     }
@@ -610,12 +608,12 @@ public class CaidenRobot {
         telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
         //telemetry.addData("Servo Pow", Jorj.getPower());
         //telemetry.addData("Where is the Pot", Pot.getVoltage());
-        //telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
-        //telemetry.addData("arm desired pos", armPosition);
+        telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
+        telemetry.addData("arm desired pos", armPosition);
         //telemetry.addData("Red", colorSensor.red());
         //telemetry.addData("Blue", colorSensor.blue());
         //telemetry.addData("Green", colorSensor.green());
-//        telemetry.addData("driveSpeedMultiplier", driveSpeedMultiplier);
+        telemetry.addData("driveSpeedMultiplier", driveSpeedMultiplier);
 
         
         //telemetry.addData("Set Arm Position", savedArmPosition);
