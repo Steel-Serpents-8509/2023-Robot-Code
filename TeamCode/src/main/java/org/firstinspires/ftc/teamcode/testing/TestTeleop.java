@@ -2,18 +2,6 @@ package org.firstinspires.ftc.teamcode.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.CaidenRobot;
 
@@ -34,7 +22,7 @@ public class TestTeleop extends OpMode {
     double headlightPower = 0;
     int shortHeight = 915;
     int medHeight = 1575;
-    int topHeight = 1575;
+    int topHeight = 2040;
 
     boolean strafe1;
     boolean strafe2;
@@ -48,7 +36,6 @@ public class TestTeleop extends OpMode {
     boolean right;
     boolean straight;
     boolean saveRaise = true;
-    // boolean quick;
     boolean first;
     boolean second;
     boolean third;
@@ -69,17 +56,12 @@ public class TestTeleop extends OpMode {
 
     public void moveDriveTrain() {
 
-        //forward = 0;
-        //horizontal = 0;
         boolean currentY = gamepad1.y;
         boolean currentX = gamepad1.x;
 
         forward = -(gamepad1.left_stick_y * 0.7);
         horizontal = -(gamepad1.left_stick_x * 0.7);
         //pivot = -(gamepad1.left_stick_x * 0.6);
-
-        //strafe1 = gamepad1.right_bumper;
-        //strafe2 = gamepad1.left_bumper;
 
         raise = gamepad2.right_trigger > .1;
         lower = gamepad2.left_trigger > .1;
@@ -141,9 +123,6 @@ public class TestTeleop extends OpMode {
         }
 
         if(enablePID) {
-            double cachedHeading = Math.abs(caiden.getCachedHeading());
-            double absHeading = Math.abs(heading);
-
             headingDifference = (caiden.getCachedHeading() - heading) % 360;
 
             if (Math.abs(headingDifference) > 180) {
@@ -226,7 +205,7 @@ public class TestTeleop extends OpMode {
             caiden.closeClaw();
         }
 
-        if(!(raise | lower)) {
+        if(!(raise || lower)) {
             caiden.driveElevator(0);
         }
         //elbow code
@@ -277,8 +256,8 @@ public class TestTeleop extends OpMode {
 
         caiden.updateTelemetry(telemetry);
         telemetry.addData("Loop Time", loopTime.milliseconds());
-        loopTime.reset();
         telemetry.update();
+        loopTime.reset();
 
     }
 

@@ -346,7 +346,7 @@ public class AutoStages {
     public static Stage<RobotAutoState> recognizeSignalWithTimeout = new Stage<>((state) -> {
         
         
-        if(state.caiden.getElevatorPosition() > 120) {
+        if(state.caiden.Slidey.getCurrentPosition() > 120) {
             state.caiden.lazyL();
         }
         state.caiden.goToElevatorPosition(915);
