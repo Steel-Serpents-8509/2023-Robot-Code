@@ -20,9 +20,9 @@ public class TestTeleop extends OpMode {
     double pivot = 0;
     int heading = 0;
     double headlightPower = 0;
-    int shortHeight = 915;
-    int medHeight = 1575;
-    int topHeight = 2040;
+    int shortHeight = 915 / 12 * 5;
+    int medHeight = 1575 / 12 * 5;
+    int topHeight = 2050 / 12 * 5;
 
     boolean strafe1;
     boolean strafe2;
@@ -41,6 +41,7 @@ public class TestTeleop extends OpMode {
     boolean third;
     boolean fourth;
 
+    boolean test;
 
     double headingDifference;
     double headingDifferenceSign;
@@ -78,6 +79,8 @@ public class TestTeleop extends OpMode {
 
         close = gamepad1.right_trigger > .1;
         open = gamepad1.left_trigger > .1;
+
+        test = gamepad1.a;
 
         left = gamepad2.b;
         straight = gamepad2.a;
@@ -138,6 +141,9 @@ public class TestTeleop extends OpMode {
             pivot = 0;
         }
 
+        if(test){
+            caiden.poorPID();
+        }
         //Make robot go vroom vroom
         if (strafe1){
             double power = 0.7;
@@ -177,7 +183,7 @@ public class TestTeleop extends OpMode {
 
         }
         if (first){
-            caiden.updateElevatorTargetPosition(25);
+            caiden.updateElevatorTargetPosition(5);
             saveRaise = true;
         }
         if (second){
@@ -192,10 +198,10 @@ public class TestTeleop extends OpMode {
         }
         //linear slide
         if (raise){
-            caiden.driveElevator(0.5);
+            caiden.driveElevator(0.1);
         }
         else if (lower){
-            caiden.driveElevator(-0.5);
+            caiden.driveElevator(-0.1);
         }
         //Pinchy
         if (open){

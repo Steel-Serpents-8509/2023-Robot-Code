@@ -256,7 +256,7 @@ public class CaidenRobot {
     }
     
     public void openClaw() {
-        Claw.setPosition(0.74);
+        Claw.setPosition(0.84);
     }
     
     public void closeClaw() {
@@ -275,7 +275,7 @@ public class CaidenRobot {
                 stopElevator = true;
                 targetElevatorPosition = elevatorPosition;
             }            
-            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.6, .7);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.3, 1);
             lastElevatorPower = elevatorPower;
         } else if((power < 0) && (elevatorPosition > 8)) {
             stopElevator = false;
@@ -310,11 +310,23 @@ public class CaidenRobot {
     public boolean safeToMoveTurret() {
         return Slidey.getCurrentPosition() > SAFE_ELEVATOR_POSITION;
     }
+
+    public void power(double power) {
+        Slidey.setPower(power);
+        Slidey2.setPower(power);
+    }
     
     public void stopArm() {
         
     }
-    
+
+    public void poorPID() {
+        power(.4);
+        Slidey.setMode(RunMode.RUN_TO_POSITION);
+        Slidey.setTargetPosition(500);
+        Slidey2.setPower(Slidey.getPower());
+        //if (Math.abs(Slidey.getCurrentPosition() - Slidey.getTargetPosition()) < 10 )
+    }
     public void lazyL() {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(leftLimit);
