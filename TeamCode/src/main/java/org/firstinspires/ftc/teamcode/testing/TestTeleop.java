@@ -2,18 +2,6 @@ package org.firstinspires.ftc.teamcode.testing;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.CaidenRobot;
 
@@ -32,9 +20,9 @@ public class TestTeleop extends OpMode {
     double pivot = 0;
     int heading = 0;
     double headlightPower = 0;
-    int shortHeight = 935;
-    int medHeight = 1575;
-    int topHeight = 2160;
+    int shortHeight = 915 / 12 * 5;
+    int medHeight = 1575 / 12 * 5;
+    int topHeight = 2050 / 12 * 5;
 
     boolean strafe1;
     boolean strafe2;
@@ -48,12 +36,12 @@ public class TestTeleop extends OpMode {
     boolean right;
     boolean straight;
     boolean saveRaise = true;
-    // boolean quick;
     boolean first;
     boolean second;
     boolean third;
     boolean fourth;
 
+    boolean test;
 
     double headingDifference;
     double headingDifferenceSign;
@@ -69,17 +57,12 @@ public class TestTeleop extends OpMode {
 
     public void moveDriveTrain() {
 
-        //forward = 0;
-        //horizontal = 0;
         boolean currentY = gamepad1.y;
         boolean currentX = gamepad1.x;
 
         forward = -(gamepad1.left_stick_y * 0.7);
         horizontal = -(gamepad1.left_stick_x * 0.7);
         //pivot = -(gamepad1.left_stick_x * 0.6);
-
-        //strafe1 = gamepad1.right_bumper;
-        //strafe2 = gamepad1.left_bumper;
 
         raise = gamepad2.right_trigger > .1;
         lower = gamepad2.left_trigger > .1;
@@ -96,6 +79,8 @@ public class TestTeleop extends OpMode {
 
         close = gamepad1.right_trigger > .1;
         open = gamepad1.left_trigger > .1;
+
+        test = gamepad1.a;
 
         left = gamepad2.b;
         straight = gamepad2.a;
@@ -141,9 +126,6 @@ public class TestTeleop extends OpMode {
         }
 
         if(enablePID) {
-            double cachedHeading = Math.abs(caiden.getCachedHeading());
-            double absHeading = Math.abs(heading);
-
             headingDifference = (caiden.getCachedHeading() - heading) % 360;
 
             if (Math.abs(headingDifference) > 180) {
@@ -159,6 +141,9 @@ public class TestTeleop extends OpMode {
             pivot = 0;
         }
 
+        if(test){
+            caiden.poorPID();
+        }
         //Make robot go vroom vroom
         if (strafe1){
             double power = 0.7;
@@ -198,7 +183,7 @@ public class TestTeleop extends OpMode {
 
         }
         if (first){
-            caiden.updateElevatorTargetPosition(25);
+            caiden.updateElevatorTargetPosition(5);
             saveRaise = true;
         }
         if (second){
@@ -213,10 +198,10 @@ public class TestTeleop extends OpMode {
         }
         //linear slide
         if (raise){
-            caiden.driveElevator(0.5);
+            caiden.driveElevator(0.1);
         }
         else if (lower){
-            caiden.driveElevator(-0.5);
+            caiden.driveElevator(-0.1);
         }
         //Pinchy
         if (open){
@@ -226,7 +211,7 @@ public class TestTeleop extends OpMode {
             caiden.closeClaw();
         }
 
-        if(!(raise | lower)) {
+        if(!(raise || lower)) {
             caiden.driveElevator(0);
         }
         //elbow code
@@ -266,19 +251,19 @@ public class TestTeleop extends OpMode {
 
     private void sendTelemetry() {
 
-        //telemetry.addData("PID Enabled", enablePID);
+        telemetry.addData("PID Enabled", enablePID);
         telemetry.addData("SetHeading", heading);
         telemetry.addData("Headlight Power", headlightPower);
         telemetry.addData("Heading Difference", headingDifference);
         telemetry.addData("Heading Difference Sign", headingDifferenceSign);
         telemetry.addData("Heading Adjustment", headingAdjustment);
 
-        //telemetry.addData("Error in turret", caiden.turretDisplacement());
+        telemetry.addData("Error in turret", caiden.turretDisplacement());
 
         caiden.updateTelemetry(telemetry);
         telemetry.addData("Loop Time", loopTime.milliseconds());
-        loopTime.reset();
         telemetry.update();
+        loopTime.reset();
 
     }
 
