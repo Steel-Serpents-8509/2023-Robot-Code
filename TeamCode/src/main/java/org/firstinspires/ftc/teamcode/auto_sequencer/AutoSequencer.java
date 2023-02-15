@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.AutoSequencer;
+package org.firstinspires.ftc.teamcode.auto_sequencer;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.AutoSequencer.*;
+
 import java.util.function.*;
 import java.util.*;
 
@@ -19,7 +19,7 @@ public class AutoSequencer<T extends StageState> {
     public AutoSequencer(T state) {
         sharedState = state;
         
-        doNothingStage = new Stage<>(DO_NOTHING_STAGE_ID, (time) -> {});
+        doNothingStage = new Stage<>(DO_NOTHING_STAGE_ID, time -> {});
     } 
 
     public void setDoNothingStage(Stage<T> stage) {
@@ -28,7 +28,7 @@ public class AutoSequencer<T extends StageState> {
     }
 
     public void addStage(int id, Consumer<T> action, Predicate<T> isEnd, Function<T, Integer> calcNextStage) {
-        addStage(new Stage<T>(id, action, isEnd, calcNextStage));
+        addStage(new Stage<>(id, action, isEnd, calcNextStage));
     }
     
     public void addStage(Stage<T> stage) {
@@ -71,9 +71,9 @@ public class AutoSequencer<T extends StageState> {
     
     public void run() {
         // isError checks that currentStage exists
-        /*if(isError()) {
+        if(isError()) {
             updateCurrentStage(DO_NOTHING_STAGE_ID);
-        }*/
+        }
         
         Stage<T> currentStage = stages.get(currentStageId);
         
@@ -102,13 +102,7 @@ public class AutoSequencer<T extends StageState> {
     }
     
     public boolean isError() {
-        if(!started) {
-            return true;
-        } else if(!stages.containsKey(currentStageId)) {
-            return true;
-        }
-
-        return false;
+        return !started || !stages.containsKey(currentStageId);
     }
     
 }

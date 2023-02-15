@@ -1,8 +1,6 @@
-package org.firstinspires.ftc.teamcode.AutoSequencer;
+package org.firstinspires.ftc.teamcode.auto_sequencer;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
 import java.util.function.*;
-import java.util.*;
 
 public class Stage<T extends StageState> {
     int id;
@@ -63,20 +61,30 @@ public class Stage<T extends StageState> {
     }
     
     public Stage<T> nextStage(Stage<T> other) {
-        nextStageSupplier = (state) -> {
-            return other.id;
-        };
+        nextStageSupplier = state -> other.id;
         return other;
     }
     
-    public void setNextStageFunction(Function<T, Integer> supplier) {
+    public Stage<T> setNextStageFunction(Function<T, Integer> supplier) {
         nextStageSupplier = supplier;
+        return this;
     }
     
-    public void setIsEndPredicate(Predicate<T> predicate) {
+    public Stage<T> setIsEndPredicate(Predicate<T> predicate) {
         isEndPredicate = predicate;
+        return this;
     }
-    
+
+    public Stage<T> setStartAction(Consumer<T> action) {
+        startAction = action;
+        return this;
+    }
+
+    public Stage<T> setFinishAction(Consumer<T> action) {
+        finishAction = action;
+        return this;
+    }
+
     public boolean isEnd(T state) {
         if(isEndPredicate == null) {
             return false;

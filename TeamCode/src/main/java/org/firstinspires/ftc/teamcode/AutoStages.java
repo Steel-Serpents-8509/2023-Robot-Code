@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import org.firstinspires.ftc.teamcode.AutoSequencer.*;
+import org.firstinspires.ftc.teamcode.auto_sequencer.*;
 
 import java.util.Comparator;
 import java.util.Objects;
