@@ -162,8 +162,7 @@ public class CaidenRobot {
 
         BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        Slidey.setDirection(DcMotorSimple.Direction.REVERSE);
-        Slidey2.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
 
         
@@ -275,7 +274,7 @@ public class CaidenRobot {
                 stopElevator = true;
                 targetElevatorPosition = elevatorPosition;
             }            
-            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.3, 1);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.7, 1);
             lastElevatorPower = elevatorPower;
         } else if((power < 0) && (elevatorPosition > 8)) {
             stopElevator = false;
