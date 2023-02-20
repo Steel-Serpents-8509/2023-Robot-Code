@@ -91,7 +91,7 @@ public class CaidenRobot {
     DistanceSensor revDistanceSensor;
     boolean stopElevator = true;
     
-    
+    private DcMotorEx HorizontalSlide;
     private static int ELEVATOR_HEIGHT = 900 / 5 * 12;
 
     int SAVED_ELEVATOR_POS = 0;
@@ -154,6 +154,7 @@ public class CaidenRobot {
         //Magnet = hardwareMap.get(TouchSensor.class, "magnet");
         Jorj = hardwareMap.get(CRServo.class, "Jorj");
         Pot = hardwareMap.get(AnalogInput.class, "Pot");
+        HorizontalSlide = hardwareMap.get(DcMotorEx.class, "horiz_Slide");
         distr = hardwareMap.get(DistanceSensor.class, "distr");
         //poleDistSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "MRRange");
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
@@ -162,7 +163,7 @@ public class CaidenRobot {
 
         BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        HorizontalSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         
@@ -175,6 +176,7 @@ public class CaidenRobot {
             Slidey.setMode(RunMode.STOP_AND_RESET_ENCODER);
             Slidey2.setMode(RunMode.STOP_AND_RESET_ENCODER);
             LazySohum.setMode(RunMode.STOP_AND_RESET_ENCODER);
+            HorizontalSlide.setMode(RunMode.STOP_AND_RESET_ENCODER);
         }
         
         BRMotor.setMode(RunMode.RUN_WITHOUT_ENCODER);
@@ -186,6 +188,7 @@ public class CaidenRobot {
         Slidey.setMode(RunMode.RUN_WITHOUT_ENCODER);
         Slidey2.setMode(RunMode.RUN_WITHOUT_ENCODER);
 
+        HorizontalSlide.setMode(RunMode.RUN_WITHOUT_ENCODER);
 
         
         /*Thread elevatorThread = new Thread(() -> {
@@ -234,6 +237,7 @@ public class CaidenRobot {
         Slidey2.setPower(0);
         LazySohum.setPower(0);
         Jorj.setPower(0);
+        HorizontalSlide.setPower(0);
     }
     public int turretDisplacement(){
         return Math.abs(LazySohum.getCurrentPosition() - LazySohum.getTargetPosition());
@@ -290,7 +294,19 @@ public class CaidenRobot {
         Slidey2.setPower(lastElevatorPower);
 
     }
-    
+
+    public void horizontalSlideOut() {
+        HorizontalSlide.setPower(.7);
+        HorizontalSlide.setTargetPosition(3);
+        HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
+
+    }
+    public void horizontalSlideIn() {
+        HorizontalSlide.setPower(-.7);
+        HorizontalSlide.setTargetPosition(0);
+        HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
+
+    }
     public void goToElevatorPosition(int position) {
         targetElevatorPosition = Range.clip(position, 0, ELEVATOR_HEIGHT);
         driveElevator(0);

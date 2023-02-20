@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.testing;
 
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -14,7 +15,6 @@ public class TestTeleop extends OpMode {
 
     CaidenRobot caiden;
     PIDController anglePID;
-
     double forward = 0;
     double horizontal = 0;
     double pivot = 0;
@@ -43,6 +43,8 @@ public class TestTeleop extends OpMode {
 
     boolean test;
 
+    boolean In;
+    boolean Out;
     double headingDifference;
     double headingDifferenceSign;
     double headingAdjustment = 0;
@@ -80,7 +82,8 @@ public class TestTeleop extends OpMode {
         close = gamepad1.right_trigger > .1;
         open = gamepad1.left_trigger > .1;
 
-        test = gamepad1.a;
+        In = gamepad1.a;
+        Out = gamepad1.b;
 
         left = gamepad2.b;
         straight = gamepad2.a;
@@ -141,8 +144,11 @@ public class TestTeleop extends OpMode {
             pivot = 0;
         }
 
-        if(test){
-            caiden.poorPID();
+        if(In){
+            caiden.horizontalSlideOut();
+        }
+        if(Out){
+            caiden.horizontalSlideIn();
         }
         //Make robot go vroom vroom
         if (strafe1){
@@ -247,6 +253,7 @@ public class TestTeleop extends OpMode {
     public void init() {
         caiden = new CaidenRobot(hardwareMap, true);
         anglePID = new PIDController(0.019, 0.01, 0.000);
+        PhotonCore.enable();
     }
 
     private void sendTelemetry() {
