@@ -84,6 +84,7 @@ public class TestTeleop extends OpMode {
 
         In = gamepad1.a;
         Out = gamepad1.b;
+        test = gamepad1.x;
 
         left = gamepad2.b;
         straight = gamepad2.a;
@@ -115,10 +116,14 @@ public class TestTeleop extends OpMode {
 
         if (left){
             caiden.lazyL();
+            caiden.horizontalSlideOut();
         } else if (right){
             caiden.lazyR();
+            caiden.horizontalSlideOut();
         } else if (straight){
             caiden.lazyS();
+            caiden.horizontalSlideIn();
+            caiden.updateElevatorTargetPosition(5);
         }
         //robot stays straight
         //if(currentY) {
@@ -144,10 +149,10 @@ public class TestTeleop extends OpMode {
             pivot = 0;
         }
 
-        if(In){
+        if(Out){
             caiden.horizontalSlideOut();
         }
-        if(Out){
+        if(In){
             caiden.horizontalSlideIn();
         }
         //Make robot go vroom vroom
@@ -216,7 +221,9 @@ public class TestTeleop extends OpMode {
         else if  (close){
             caiden.closeClaw();
         }
-
+        if (test){
+            caiden.resets();
+        }
         if(!(raise || lower)) {
             caiden.driveElevator(0);
         }

@@ -163,7 +163,7 @@ public class CaidenRobot {
 
         BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        HorizontalSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+        //HorizontalSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         
@@ -296,13 +296,13 @@ public class CaidenRobot {
     }
 
     public void horizontalSlideOut() {
-        HorizontalSlide.setPower(.7);
-        HorizontalSlide.setTargetPosition(3);
+        HorizontalSlide.setPower(1);
+        HorizontalSlide.setTargetPosition(290);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
     }
     public void horizontalSlideIn() {
-        HorizontalSlide.setPower(-.7);
+        HorizontalSlide.setPower(-1);
         HorizontalSlide.setTargetPosition(0);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
@@ -541,7 +541,9 @@ public class CaidenRobot {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         return angles.firstAngle;
     }
-    
+    public void resets() {
+        HorizontalSlide.setPower(-.7);
+    }
     public double getCachedHeading() {
         if(angles == null) {
             return getRawHeading();
@@ -619,6 +621,7 @@ public class CaidenRobot {
         //telemetry.addData("Red", colorSensor.red());
         //telemetry.addData("Blue", colorSensor.blue());
         //telemetry.addData("Green", colorSensor.green());
+        telemetry.addData("horiz slide", HorizontalSlide.getCurrentPosition());
     }
     
     public int getFRMotorCount() {
