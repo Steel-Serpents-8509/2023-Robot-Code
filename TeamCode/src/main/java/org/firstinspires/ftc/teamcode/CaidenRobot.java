@@ -331,16 +331,14 @@ public class CaidenRobot {
         Slidey2.setPower(power);
     }
     
-    public void stopArm() {
-        
-    }
+
 
     public void poorPID() {
         power(.4);
         Slidey.setMode(RunMode.RUN_TO_POSITION);
         Slidey.setTargetPosition(500);
         Slidey2.setPower(Slidey.getPower());
-        //if (Math.abs(Slidey.getCurrentPosition() - Slidey.getTargetPosition()) < 10 )
+
     }
     public void lazyL() {
         if(safeToMoveTurret()) {

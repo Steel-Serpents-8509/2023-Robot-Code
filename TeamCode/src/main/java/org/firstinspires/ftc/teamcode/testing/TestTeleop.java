@@ -40,7 +40,8 @@ public class TestTeleop extends OpMode {
     boolean second;
     boolean third;
     boolean fourth;
-
+    boolean Inc;
+    boolean Outc;
     boolean test;
 
     boolean In;
@@ -69,7 +70,8 @@ public class TestTeleop extends OpMode {
         raise = gamepad2.right_trigger > .1;
         lower = gamepad2.left_trigger > .1;
 
-
+        Outc = gamepad2.left_stick_y > 0.5;
+        Inc = gamepad2.left_stick_y < -0.5;
 
         first = gamepad2.dpad_down;
         second = gamepad2.dpad_left;
@@ -227,9 +229,12 @@ public class TestTeleop extends OpMode {
             caiden.driveElevator(0);
         }
         //elbow code
-
-
-
+        if(Outc){
+            caiden.horizontalSlideOut();
+        }
+        if(Inc){
+            caiden.horizontalSlideIn();
+        }
 
     }
 
