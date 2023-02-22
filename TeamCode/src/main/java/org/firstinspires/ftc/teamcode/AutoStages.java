@@ -83,7 +83,7 @@ public class AutoStages {
                             -state.power + state.pivot, 
                              state.power - state.pivot);
         state.caiden.goToElevatorPosition(915);
-        state.caiden.armPosition(0);
+
         state.caiden.lazyL();
         state.caiden.closeClaw();
     };
@@ -104,7 +104,7 @@ public class AutoStages {
                                        state.power - state.pivot);
                                        
         state.caiden.goToElevatorPosition(915);
-        state.caiden.armPosition(0.06);
+
         state.caiden.lazyL();
         state.caiden.closeClaw();
     };
@@ -124,7 +124,7 @@ public class AutoStages {
                                        state.power - state.pivot);
                                        
         state.caiden.goToElevatorPosition(915);
-        state.caiden.armPosition(0);
+
         state.caiden.lazyL();
         state.caiden.closeClaw();
     }, 
@@ -147,7 +147,7 @@ public class AutoStages {
                                 -state.power + state.pivot, 
                                  state.power - state.pivot);
             state.caiden.goToElevatorPosition(state.coneHeight[state.currentCone]);
-            state.caiden.armPosition(0.05);
+
             state.caiden.lazyR();
             state.caiden.openClaw();
         },
@@ -168,7 +168,7 @@ public class AutoStages {
             } else {
                 state.caiden.closeClaw();
             }
-            state.caiden.armPosition(0.24);
+
             state.caiden.lazyR();
         },
         (state) -> {state.caiden.resetDrivetrain(); state.distanceToWall = distanceToCone;},
@@ -185,7 +185,7 @@ public class AutoStages {
             
             // 915 is low goal
             state.caiden.goToElevatorPosition(915);
-            state.caiden.armPosition(0.28);
+
             state.caiden.lazyR();
             state.caiden.closeClaw();
         },
@@ -202,7 +202,7 @@ public class AutoStages {
                                        state.power - state.pivot);
                                        
         state.caiden.goToElevatorPosition(915);
-        state.caiden.armPosition(0.24);
+
         state.caiden.lazyL();
         state.caiden.closeClaw();
         };
@@ -228,7 +228,7 @@ public class AutoStages {
                                        state.power + state.pivot, 
                                        state.power - state.pivot);
 
-        state.caiden.armPosition(0.24);
+
         state.caiden.lazyL();
         state.caiden.closeClaw();
         };
@@ -250,7 +250,7 @@ public class AutoStages {
                                        state.power - state.pivot);
                                        
         state.caiden.goToElevatorPosition(300);
-        state.caiden.armPosition(0.24);
+
         state.caiden.lazyL();
         state.caiden.openClaw();
         };
@@ -272,7 +272,7 @@ public class AutoStages {
                                        state.power - state.pivot);
                                        
         state.caiden.goToElevatorPosition(915);
-        state.caiden.armPosition(0.0);
+
         state.caiden.lazyR();
         state.caiden.openClaw();
         },
@@ -288,7 +288,7 @@ public class AutoStages {
                                        state.power - state.pivot);
                                        
         state.caiden.goToElevatorPosition(915);
-        state.caiden.armPosition(0.0);
+
         state.caiden.lazyR();
         state.caiden.openClaw();
         },
@@ -335,7 +335,7 @@ public class AutoStages {
                                        state.power - state.pivot);
                                        
         state.caiden.goToElevatorPosition(915);
-        state.caiden.armPosition(0);
+
         state.caiden.lazyL();
         state.caiden.closeClaw();
         
@@ -401,7 +401,7 @@ public class AutoStages {
                 -state.power - state.pivot,
                 -state.power + state.pivot,
                 state.power - state.pivot);
-        state.caiden.armPosition(0.1);
+
         state.caiden.lazyS();
         state.caiden.closeClaw();
         if(state.stageElapsedTime.milliseconds() > 2000) {
@@ -417,7 +417,7 @@ public class AutoStages {
                 -state.power - state.pivot,
                 -state.power + state.pivot,
                 state.power - state.pivot);
-        state.caiden.armPosition(0.1);
+
         state.caiden.lazyS();
         state.caiden.closeClaw();
         if(state.stageElapsedTime.milliseconds() > 2000) {
@@ -433,7 +433,7 @@ public class AutoStages {
                 -state.power - state.pivot,
                 -state.power + state.pivot,
                 state.power - state.pivot);
-        state.caiden.armPosition(0.1);
+
         state.caiden.lazyS();
         state.caiden.closeClaw();
         if(state.stageElapsedTime.milliseconds() > 2000) {
@@ -452,7 +452,7 @@ public class AutoStages {
                 state.power + state.pivot,
                 state.power - state.pivot);
         state.caiden.goToElevatorPosition(0);
-        state.caiden.armPosition(0.1);
+
     },
     (state) -> {state.caiden.resetDrivetrain(); state.caiden.reset(); state.distance = -300;}, null);
 

@@ -87,7 +87,7 @@ public class TheFakeAuto extends LinearOpMode {
                 power = Range.clip(forwardController.calculate(caiden.getFRMotorCount(), 2600), -0.7, 0.7);
                 pivot = anglePID.calculate(caiden.getCachedHeading(), heading);
                 caiden.driveRawPower(power + pivot, power - pivot, power + pivot, power - pivot);
-                caiden.armPosition(01);
+
                 caiden.openClaw();
                 
                 if(forwardController.atSetPoint()) {
@@ -110,7 +110,7 @@ public class TheFakeAuto extends LinearOpMode {
                 power = Range.clip(forwardController.calculate(caiden.getFRMotorCount(), 2180), -0.7, 0.7);
                 pivot = anglePID.calculate(caiden.getCachedHeading(), heading);
                 caiden.driveRawPower(power + pivot, power - pivot, power + pivot, power - pivot);
-                caiden.armPosition(01);
+
                 caiden.openClaw();
                 
                 if(forwardController.atSetPoint()) {
@@ -133,7 +133,7 @@ public class TheFakeAuto extends LinearOpMode {
                 pivot = anglePID.calculate(caiden.getCachedHeading(), heading);
                 caiden.driveRawPower(power + pivot, -power - pivot, -power + pivot, power - pivot);
                 caiden.goToElevatorPosition(coneHeight[currentCone]);
-                caiden.armPosition(0);
+
                 caiden.lazyR();
                 caiden.openClaw();
                 if(rangeSensorController.atSetPoint() && !robotStopped) {
@@ -192,7 +192,7 @@ public class TheFakeAuto extends LinearOpMode {
                 
                 
                 caiden.goToElevatorPosition(ELEVATOR_TOP);
-                caiden.armPosition(1);
+
                 //power = 0;
                 //power = strafeController.calculate(caiden.getDistance(), 2000);
                 //power = Range.clip(strafeController.calculate(caiden.getFRMotorCount(), 1830), -0.8, 0.8);
@@ -217,7 +217,7 @@ public class TheFakeAuto extends LinearOpMode {
                     ranOnce = true;
                 }
                 
-                caiden.armPosition(0.6);
+
                 if(((System.nanoTime() - robotStoppedTimestamp) > 1000000000L)) {
                     caiden.reset();
                     robotStopped = false;
@@ -334,7 +334,7 @@ public class TheFakeAuto extends LinearOpMode {
             pivot = anglePID.calculate(caiden.getCachedHeading(), heading);
             caiden.driveRawPowerInAuto(power + pivot, -power - pivot, -power + pivot, power - pivot);
             caiden.goToElevatorPosition(0);
-            caiden.armPosition(0);
+
             updateTelemetry();
                 if(strafeController.atSetPoint() && !robotStopped) {
                     robotStoppedTimestamp = System.nanoTime();
@@ -381,7 +381,7 @@ public class TheFakeAuto extends LinearOpMode {
             pivot = anglePID.calculate(caiden.getCachedHeading(), heading);
             caiden.driveRawPowerInAuto(power + pivot, -power - pivot, -power + pivot, power - pivot);
             caiden.goToElevatorPosition(0);
-            caiden.armPosition(0);
+
             updateTelemetry();
                 
                 /*if(strafeController.atSetPoint() && !robotStopped) {
@@ -429,7 +429,7 @@ public class TheFakeAuto extends LinearOpMode {
             pivot = anglePID.calculate(caiden.getCachedHeading(), heading);
             caiden.driveRawPowerInAuto(power + pivot, -power - pivot, -power + pivot, power - pivot);
             caiden.goToElevatorPosition(0);
-            caiden.armPosition(0);
+
             updateTelemetry();
                 
                 if(strafeController.atSetPoint() && !robotStopped) {

@@ -28,8 +28,8 @@ public class TestTeleop extends OpMode {
     boolean strafe2;
     boolean raise;
     boolean lower;
-    boolean raiseArm;
-    boolean lowerArm;
+
+
     boolean close;
     boolean open;
     boolean left;
@@ -69,8 +69,7 @@ public class TestTeleop extends OpMode {
         raise = gamepad2.right_trigger > .1;
         lower = gamepad2.left_trigger > .1;
 
-        raiseArm = gamepad2.left_stick_y > 0.5;
-        lowerArm = gamepad2.left_stick_y < -0.5;
+
 
         first = gamepad2.dpad_down;
         second = gamepad2.dpad_left;
@@ -228,31 +227,9 @@ public class TestTeleop extends OpMode {
             caiden.driveElevator(0);
         }
         //elbow code
-        if (raiseArm) {
-            saveRaise = true;
-        } else if (lowerArm) {
-            saveRaise = false;
-        }
 
-        /*if(gamepad1.back) {
-            if(headlightPower != 0) {
-                headlightPower -= 0.01;
-            }
-        }
 
-        if(gamepad1.start) {
-            if(headlightPower != 1) {
-                headlightPower += 0.01;
-            }
-        }*/
 
-        /*if((left | right | straight) && !caiden.armAboveSafeLimit()) {
-            caiden.armPosition(0.7);
-        } else */if(saveRaise) {
-            caiden.armPosition(0);
-        } else {
-            caiden.armPosition(1);
-        }
 
     }
 

@@ -71,10 +71,10 @@ public class CaidenRobot {
     private PIDFController BLDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
 
     private DcMotor LazySohum;
-    private CRServo Jorj;
+
     private DistanceSensor distr;
     private ModernRoboticsI2cRangeSensor poleDistSensor;
-    public AnalogInput Pot;
+
     public Servo Claw;
     public ColorSensor colorSensor;
     private ServoImplEx headlight;    
@@ -152,8 +152,8 @@ public class CaidenRobot {
         LazySohum = hardwareMap.get(DcMotor.class, "Lazy_Sohum");
         Claw = hardwareMap.get(Servo.class, "Claw");
         //Magnet = hardwareMap.get(TouchSensor.class, "magnet");
-        Jorj = hardwareMap.get(CRServo.class, "Jorj");
-        Pot = hardwareMap.get(AnalogInput.class, "Pot");
+
+
         HorizontalSlide = hardwareMap.get(DcMotorEx.class, "horiz_Slide");
         distr = hardwareMap.get(DistanceSensor.class, "distr");
         //poleDistSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "MRRange");
@@ -236,7 +236,7 @@ public class CaidenRobot {
         Slidey.setPower(0);
         Slidey2.setPower(0);
         LazySohum.setPower(0);
-        Jorj.setPower(0);
+
         HorizontalSlide.setPower(0);
     }
     public int turretDisplacement(){
@@ -570,27 +570,11 @@ public class CaidenRobot {
     boolean armMoving = false;
     boolean armPIDEnabled = true;
     
-    public void moveArm(double power) {
-        if(power > 0 && Pot.getVoltage() > MAX_ARM_VOLTAGE) {
-            armMoving = true;
-            Jorj.setPower(power);
-        } else if (power < 0 && Pot.getVoltage() < MIN_ARM_VOLTAGE) {
-            armMoving = true;
-            Jorj.setPower(power);
-        } else {
-            Jorj.setPower(0);
-        }
-        
-    }
+
     
-    public void armPosition(double position) {
-        armPosition = MIN_ARM_VOLTAGE - ((MIN_ARM_VOLTAGE - MAX_ARM_VOLTAGE) * position);
-        Jorj.setPower(-armController.calculate(Pot.getVoltage(), armPosition));
-    }
+
     
-    public void armRawPosition(double position) {
-        Jorj.setPower(-armController.calculate(Pot.getVoltage(), position));
-    }
+
     
     public double colorSensorRed() {
         return colorSensor.red();

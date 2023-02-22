@@ -48,9 +48,9 @@ public class TheRealAuto_Copy extends LinearOpMode {
         // Go to zone
         //goToZone();
         caiden.Claw.setPosition(0);
-        while (caiden.Pot.getVoltage()>.65) {
-            caiden.moveArm(1);
-        }
+        //while (caiden.Pot.getVoltage()>.65) {
+          //  caiden.moveArm(1);
+        //}
         caiden.goToForwardPosition(2200);
      }
      

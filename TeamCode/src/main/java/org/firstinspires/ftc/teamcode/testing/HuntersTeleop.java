@@ -257,12 +257,12 @@ public class HuntersTeleop extends OpMode {
         
         /*if((left | right | straight) && !caiden.armAboveSafeLimit()) {
             caiden.armPosition(0.7);
-        } else */if(saveRaise) {
+        } else if(saveRaise) {
             caiden.armPosition(0);
         } else {
             caiden.armPosition(1);
         }
-        
+        */
      }
 
      @Override
