@@ -343,8 +343,9 @@ public class CaidenRobot {
     public void lazyL() {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(leftLimit);
-            LazySohum.setMode(RunMode.RUN_TO_POSITION);
             LazySohum.setPower(0.5);
+            LazySohum.setMode(RunMode.RUN_TO_POSITION);
+
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
             targetElevatorPosition = SAFE_ELEVATOR_POSITION;
@@ -352,9 +353,10 @@ public class CaidenRobot {
             LazySohum.setPower(0);
         }
         if (300 < LazySohum.getCurrentPosition() && LazySohum.getPower() == 0){
+
             LazySohum.setTargetPosition(leftLimit);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.5);
+
             driveElevator(-1);
         }
 
