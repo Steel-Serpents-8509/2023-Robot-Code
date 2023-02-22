@@ -370,7 +370,7 @@ public class CaidenRobot {
 
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
-            targetElevatorPosition = SAFE_ELEVATOR_POSITION;
+            targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
         } else {
             LazySohum.setPower(0);
         }
@@ -390,7 +390,7 @@ public class CaidenRobot {
 
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
-            targetElevatorPosition = SAFE_ELEVATOR_POSITION ;
+            targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
         } else {
             LazySohum.setPower(0);
         }
@@ -411,7 +411,7 @@ public class CaidenRobot {
             LazySohum.setPower(0.7);
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
-            targetElevatorPosition = SAFE_ELEVATOR_POSITION + 200;
+            targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
         } else {
             LazySohum.setPower(0);
         }
@@ -575,7 +575,7 @@ public class CaidenRobot {
     boolean armMoving = false;
     boolean armPIDEnabled = true;
     
-2q1
+
     
 
     
