@@ -138,7 +138,7 @@ public class ConePlaceAuto extends LinearOpMode {
     }
     
     private void updateTelemetry() {
-        telemetry.addData("Auto Stage", AutoStages.sequencer.getcurrentStageId());
+        telemetry.addData("Auto Stage", AutoStages.sequencer.getCurrentStageId());
         telemetry.addData("Auto Stage Time", AutoStages.sequencer.getTimeInStageMS());
         telemetry.addData("Power", AutoStages.state.power);
         telemetry.addData("Pivot", AutoStages.state.pivot);

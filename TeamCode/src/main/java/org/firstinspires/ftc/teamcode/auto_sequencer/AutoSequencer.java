@@ -38,7 +38,7 @@ public class AutoSequencer<T extends StageState> {
         stages.put(stage.getId(), stage);
     }
     
-    public int getcurrentStageId() {
+    public int getCurrentStageId() {
         return currentStageId;
     }
     
