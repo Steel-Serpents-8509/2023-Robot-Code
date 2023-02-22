@@ -355,6 +355,7 @@ public class CaidenRobot {
         if (300 < LazySohum.getCurrentPosition() && LazySohum.getPower() == 0){
 
             LazySohum.setTargetPosition(leftLimit);
+            LazySohum.setPower(0.5);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
 
             driveElevator(-1);
@@ -364,8 +365,9 @@ public class CaidenRobot {
     public void lazyR () {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(rightLimit);
-            LazySohum.setMode(RunMode.RUN_TO_POSITION);
             LazySohum.setPower(0.5);
+            LazySohum.setMode(RunMode.RUN_TO_POSITION);
+
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
             targetElevatorPosition = SAFE_ELEVATOR_POSITION;
@@ -374,16 +376,18 @@ public class CaidenRobot {
         }
         if (LazySohum.getCurrentPosition() < -300 && LazySohum.getPower() == 0){
             LazySohum.setTargetPosition(rightLimit);
-            LazySohum.setMode(RunMode.RUN_TO_POSITION);
             LazySohum.setPower(0.5);
+            LazySohum.setMode(RunMode.RUN_TO_POSITION);
+
             driveElevator(-1);
         }
     }
     public void lazyS(){
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(0);
-            LazySohum.setMode(RunMode.RUN_TO_POSITION);
             LazySohum.setPower(0.5);
+            LazySohum.setMode(RunMode.RUN_TO_POSITION);
+
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
             targetElevatorPosition = SAFE_ELEVATOR_POSITION ;
@@ -392,8 +396,9 @@ public class CaidenRobot {
         }
         if (-100 < LazySohum.getCurrentPosition() && LazySohum.getCurrentPosition() < 100 && LazySohum.getPower() == 0){
             LazySohum.setTargetPosition(0);
-            LazySohum.setMode(RunMode.RUN_TO_POSITION);
             LazySohum.setPower(0.5);
+            LazySohum.setMode(RunMode.RUN_TO_POSITION);
+            
             driveElevator(-1);
         }
     }
