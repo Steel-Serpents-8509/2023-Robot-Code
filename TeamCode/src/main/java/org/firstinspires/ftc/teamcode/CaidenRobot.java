@@ -321,7 +321,7 @@ public class CaidenRobot {
     }
     
     // Is it safe to move the turret?
-    public static final int SAFE_ELEVATOR_POSITION = 100;
+    public static final int SAFE_ELEVATOR_POSITION = 200;
     public boolean safeToMoveTurret() {
         return Slidey.getCurrentPosition() > SAFE_ELEVATOR_POSITION;
     }
@@ -344,17 +344,17 @@ public class CaidenRobot {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(leftLimit);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.4);
+            LazySohum.setPower(0.5);
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
-            targetElevatorPosition = SAFE_ELEVATOR_POSITION + 60;
+            targetElevatorPosition = SAFE_ELEVATOR_POSITION;
         } else {
             LazySohum.setPower(0);
         }
         if (300 < LazySohum.getCurrentPosition() && LazySohum.getPower() == 0){
             LazySohum.setTargetPosition(leftLimit);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.4);
+            LazySohum.setPower(0.5);
             driveElevator(-1);
         }
 
@@ -363,17 +363,17 @@ public class CaidenRobot {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(rightLimit);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.4);
+            LazySohum.setPower(0.5);
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
-            targetElevatorPosition = SAFE_ELEVATOR_POSITION + 60;
+            targetElevatorPosition = SAFE_ELEVATOR_POSITION;
         } else {
             LazySohum.setPower(0);
         }
         if (LazySohum.getCurrentPosition() < -300 && LazySohum.getPower() == 0){
             LazySohum.setTargetPosition(rightLimit);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.4);
+            LazySohum.setPower(0.5);
             driveElevator(-1);
         }
     }
@@ -381,17 +381,17 @@ public class CaidenRobot {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(0);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.4);
+            LazySohum.setPower(0.5);
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
-            targetElevatorPosition = SAFE_ELEVATOR_POSITION + 60;
+            targetElevatorPosition = SAFE_ELEVATOR_POSITION ;
         } else {
             LazySohum.setPower(0);
         }
         if (-100 < LazySohum.getCurrentPosition() && LazySohum.getCurrentPosition() < 100 && LazySohum.getPower() == 0){
             LazySohum.setTargetPosition(0);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.4);
+            LazySohum.setPower(0.5);
             driveElevator(-1);
         }
     }
@@ -412,7 +412,7 @@ public class CaidenRobot {
     }
     
     public void updateElevatorTargetPosition(int position){
-        position = Range.clip(position, 6, ELEVATOR_HEIGHT);
+        position = Range.clip(position, 0, ELEVATOR_HEIGHT);
         targetElevatorPosition = position;
     }
     public void updateTurretTargetPosition(int position){

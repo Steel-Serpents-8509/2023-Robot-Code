@@ -195,8 +195,8 @@ public class TestTeleop extends OpMode {
 
         }
         if (first){
-            caiden.updateElevatorTargetPosition(5);
-            saveRaise = true;
+            caiden.updateElevatorTargetPosition(0);
+            //saveRaise = true;
         }
         if (second){
             caiden.updateElevatorTargetPosition(shortHeight);
@@ -206,7 +206,7 @@ public class TestTeleop extends OpMode {
         }
         if (fourth){
             caiden.updateElevatorTargetPosition(topHeight);
-            saveRaise = false;
+            //saveRaise = false;
         }
         //linear slide
         if (raise){
