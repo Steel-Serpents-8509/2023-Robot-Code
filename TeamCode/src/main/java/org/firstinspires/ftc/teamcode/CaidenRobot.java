@@ -56,11 +56,6 @@ public class CaidenRobot {
     
     private DcMotor headlightVoltage;
     
-    private final PIDDriveMotor FRDrive;
-    private final PIDDriveMotor FLDrive;
-    private final PIDDriveMotor BRDrive;
-    private final PIDDriveMotor BLDrive;
-    
     private final double driveMotorP = 0.1;
     private final double driveMotorI = 0;
     private final double driveMotorD = 0;
@@ -141,11 +136,6 @@ public class CaidenRobot {
         BLMotor = hardwareMap.get(DcMotorEx.class, "BLMotor");
         FRMotor = hardwareMap.get(DcMotorEx.class, "FRMotor");
         FLMotor = hardwareMap.get(DcMotorEx.class, "FLMotor");
-
-        FRDrive = new PIDDriveMotor(FRMotor, FRDriveController);
-        FLDrive = new PIDDriveMotor(FLMotor, FLDriveController);
-        BRDrive = new PIDDriveMotor(BRMotor, BRDriveController);
-        BLDrive = new PIDDriveMotor(BLMotor, BLDriveController);
 
         Slidey = hardwareMap.get(DcMotorEx.class, "Slidey");
         Slidey2 = hardwareMap.get(DcMotorEx.class, "Slidey2");
@@ -414,24 +404,6 @@ public class CaidenRobot {
         FLMotor.setPower(frontLeftPower * driveSpeedMultiplier);
         BRMotor.setPower(backRightPower * driveSpeedMultiplier);
         BLMotor.setPower(backLeftPower * driveSpeedMultiplier);
-    }
-    
-    public void driveMotors(double frontRightPower, double frontLeftPower, double backRightPower, double backLeftPower) {
-        if(Slidey.getCurrentPosition() >= 700) {
-            driveSpeedMultiplier = 0.5;
-        } else {
-            driveSpeedMultiplier = 1;
-        }
-        FRDrive.setVelocity(4000 * frontRightPower * driveSpeedMultiplier);
-        FLDrive.setVelocity(4000 * frontLeftPower * driveSpeedMultiplier);
-        BRDrive.setVelocity(4000 * backRightPower * driveSpeedMultiplier);
-        BLDrive.setVelocity(4000 * backLeftPower * driveSpeedMultiplier);
-        
-        FRDrive.update();
-        FLDrive.update();
-        BRDrive.update();
-        BLDrive.update();
-        
     }
     
     public void driveRawPowerInAuto(double frontRightPower, double frontLeftPower, double backRightPower, double backLeftPower) {
