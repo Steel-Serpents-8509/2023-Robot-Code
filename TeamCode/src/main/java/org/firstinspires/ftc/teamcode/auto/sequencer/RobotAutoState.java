@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto_sequencer;
+package org.firstinspires.ftc.teamcode.auto.sequencer;
 
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.util.ElapsedTime;

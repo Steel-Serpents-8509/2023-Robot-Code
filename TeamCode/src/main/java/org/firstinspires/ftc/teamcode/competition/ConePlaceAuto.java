@@ -1,16 +1,15 @@
 package org.firstinspires.ftc.teamcode.competition;
 
 import android.annotation.SuppressLint;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.CustomVision;
 import org.firstinspires.ftc.teamcode.CaidenRobot;
 import org.firstinspires.ftc.teamcode.AutoStages;
-
-import org.firstinspires.ftc.teamcode.auto_sequencer.*;
+import org.firstinspires.ftc.teamcode.auto.sequencer.RobotAutoState;
+import org.firstinspires.ftc.teamcode.auto.sequencer.Stage;
+import java.util.Optional;
 
 @Autonomous
 public class ConePlaceAuto extends LinearOpMode {
@@ -31,7 +30,7 @@ public class ConePlaceAuto extends LinearOpMode {
         AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
         AutoStages.state.telemetry = telemetry;
         
-        AutoStages.sequencer.setDoNothingStage(new Stage<>(state -> caiden.stop()));
+        AutoStages.sequencer.setDoNothingStage(new Stage<>("caiden.stop()", state -> caiden.stop()));
         
         
         AutoStages.closeClawOnPreloadCone
@@ -63,60 +62,35 @@ public class ConePlaceAuto extends LinearOpMode {
 
         AutoStages.liftElevatorToClearConeStack.setNextStageFunction(state -> {
             if(state.currentCone >= state.maxCone) {
-                return AutoStages.goToZone.getId();
+                return Optional.of(AutoStages.goToZone);
             } else {
-                return AutoStages.backupToShortPole.getId();
+                return Optional.of(AutoStages.backupToShortPole);
             }
         });
 
         AutoStages.goToZone.setNextStageFunction(state -> {
-            int ret;
+            Stage<RobotAutoState> ret;
             switch (state.recognizedSignal) {
                 case "circle":
-                    ret = AutoStages.goToZone1.getId();
+                    ret = AutoStages.goToZone1;
                     break;
                 case "triangle":
-                    ret = AutoStages.goToZone3.getId();
+                    ret = AutoStages.goToZone3;
                     break;
                 case "square":
                 case "":
                 default:
-                    ret = AutoStages.goToZone2.getId();
+                    ret = AutoStages.goToZone2;
             }
-            return ret;
+            return Optional.of(ret);
         });
         
-        AutoStages.sequencer.addStage(AutoStages.closeClawOnPreloadCone);
-        AutoStages.sequencer.addStage(AutoStages.recognizeSignalWithTimeout);
-        AutoStages.sequencer.addStage(AutoStages.goRightToWall);
-        AutoStages.sequencer.addStage(AutoStages.goForwardToConeStackWithStartingCone);
-        AutoStages.sequencer.addStage(AutoStages.findConeLinePosition);
-        AutoStages.sequencer.addStage(AutoStages.backupToShortPoleWithStartingCone);
-        AutoStages.sequencer.addStage(AutoStages.lowerStartingConeOntoPole);
-        AutoStages.sequencer.addStage(AutoStages.openClawWithStartingCone);
-        
-        AutoStages.sequencer.addStage(AutoStages.lineUpWithConeStack);
-        AutoStages.sequencer.addStage(AutoStages.approachConeStack);
-        AutoStages.sequencer.addStage(AutoStages.grabCone);
-        AutoStages.sequencer.addStage(AutoStages.liftElevatorToClearConeStack);
-        AutoStages.sequencer.addStage(AutoStages.backupToShortPole);
-        AutoStages.sequencer.addStage(AutoStages.lowerConeOntoPole);
-        AutoStages.sequencer.addStage(AutoStages.openClaw);
-        AutoStages.sequencer.addStage(AutoStages.clearLowGoal);
-        AutoStages.sequencer.addStage(AutoStages.goBackToConeStack);
-        AutoStages.sequencer.addStage(AutoStages.goToZone);
-        AutoStages.sequencer.addStage(AutoStages.goToZone1);
-        AutoStages.sequencer.addStage(AutoStages.goToZone2);
-        AutoStages.sequencer.addStage(AutoStages.goToZone3);
-        AutoStages.sequencer.addStage(AutoStages.backupIntoZoneSlightly);
-        
-
         RobotAutoState.forwardController.setTolerance(30);
         RobotAutoState.strafeController.setTolerance(40);
         RobotAutoState.anglePID.setTolerance(2);
         RobotAutoState.rangeSensorController.setTolerance(2.2);
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Stage ID", AutoStages.closeClawOnPreloadCone.getId());
+        telemetry.addData("Starting Auto Stage", AutoStages.sequencer.getCurrentStageName());
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         caiden.enableHeadlight();
@@ -128,17 +102,13 @@ public class ConePlaceAuto extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            
-            
             AutoStages.sequencer.run();
             updateTelemetry();
-            
-
         }
     }
     
     private void updateTelemetry() {
-        telemetry.addData("Auto Stage", AutoStages.sequencer.getCurrentStageId());
+        telemetry.addData("Current Auto Stage Name", AutoStages.sequencer.getCurrentStageName());
         telemetry.addData("Auto Stage Time", AutoStages.sequencer.getTimeInStageMS());
         telemetry.addData("Power", AutoStages.state.power);
         telemetry.addData("Pivot", AutoStages.state.pivot);

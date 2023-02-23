@@ -8,7 +8,10 @@ import org.firstinspires.ftc.teamcode.CustomVision;
 import org.firstinspires.ftc.teamcode.CaidenRobot;
 import org.firstinspires.ftc.teamcode.AutoStages;
 
-import org.firstinspires.ftc.teamcode.auto_sequencer.*;
+import org.firstinspires.ftc.teamcode.auto.sequencer.RobotAutoState;
+import org.firstinspires.ftc.teamcode.auto.sequencer.Stage;
+
+import java.util.Optional;
 
 @Autonomous
 public class TestingAuto extends LinearOpMode {
@@ -35,7 +38,7 @@ public class TestingAuto extends LinearOpMode {
         AutoStages.state.caiden = caiden;
         AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/black_shapes_good_videos.tflite");
         
-        AutoStages.sequencer.setDoNothingStage(new Stage<>(state -> caiden.stop()));
+        AutoStages.sequencer.setDoNothingStage(new Stage<>("caiden.stop()", state -> caiden.stop()));
         
         AutoStages.closeClawOnPreloadCone
         .nextStage(AutoStages.recognizeSignalWithTimeout)
@@ -62,40 +65,18 @@ public class TestingAuto extends LinearOpMode {
         
         AutoStages.goBackToConeStack.setNextStageFunction(state -> {
             if(state.currentCone >= state.maxCone) {
-                return -100;
+                return Optional.empty();
             } else {
-                return AutoStages.approachConeStack.getId();
+                return Optional.of(AutoStages.approachConeStack);
             }
         });
-        
-        
-        AutoStages.sequencer.addStage(AutoStages.testElevator);
-        AutoStages.sequencer.addStage(AutoStages.closeClawOnPreloadCone);
-        AutoStages.sequencer.addStage(AutoStages.recognizeSignalWithTimeout);
-        AutoStages.sequencer.addStage(AutoStages.goRightToWall);
-        AutoStages.sequencer.addStage(AutoStages.goForwardToConeStackWithStartingCone);
-        AutoStages.sequencer.addStage(AutoStages.findConeLinePosition);
-        AutoStages.sequencer.addStage(AutoStages.backupToShortPoleWithStartingCone);
-        AutoStages.sequencer.addStage(AutoStages.lowerStartingConeOntoPole);
-        AutoStages.sequencer.addStage(AutoStages.openClawWithStartingCone);
-        
-        AutoStages.sequencer.addStage(AutoStages.lineUpWithConeStack);
-        AutoStages.sequencer.addStage(AutoStages.approachConeStack);
-        AutoStages.sequencer.addStage(AutoStages.grabCone);
-        AutoStages.sequencer.addStage(AutoStages.liftElevatorToClearConeStack);
-        AutoStages.sequencer.addStage(AutoStages.backupToShortPole);
-        AutoStages.sequencer.addStage(AutoStages.lowerConeOntoPole);
-        AutoStages.sequencer.addStage(AutoStages.openClaw);
-        AutoStages.sequencer.addStage(AutoStages.clearLowGoal);
-        AutoStages.sequencer.addStage(AutoStages.goBackToConeStack);
-        
-        
+
         RobotAutoState.forwardController.setTolerance(30);
         RobotAutoState.strafeController.setTolerance(30);
         RobotAutoState.anglePID.setTolerance(2);
         RobotAutoState.rangeSensorController.setTolerance(2.2);
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Stage ID", AutoStages.closeClawOnPreloadCone.getId());
+        telemetry.addData("Starting Auto Stage", AutoStages.sequencer.getCurrentStageName());
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -114,7 +95,7 @@ public class TestingAuto extends LinearOpMode {
     }
     
     private void updateTelemetry() {
-        telemetry.addData("Auto Stage", AutoStages.sequencer.getCurrentStageId());
+        telemetry.addData("Current Auto Stage Name", AutoStages.sequencer.getCurrentStageName());
         telemetry.addData("Auto Stage Time", AutoStages.sequencer.getTimeInStageMS());
         telemetry.addData("Power", AutoStages.state.power);
         telemetry.addData("Pivot", AutoStages.state.pivot);
