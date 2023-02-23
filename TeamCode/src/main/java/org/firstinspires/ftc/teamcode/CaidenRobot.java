@@ -579,8 +579,6 @@ public class CaidenRobot {
     
 
     
-
-    
     public double colorSensorRed() {
         return colorSensor.red();
     }
