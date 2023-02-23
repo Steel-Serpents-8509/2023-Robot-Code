@@ -81,7 +81,7 @@ public class TestingAuto extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        AutoStages.sequencer.start();
+        AutoStages.sequencer.start(AutoStages.closeClawOnPreloadCone);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {

@@ -98,7 +98,7 @@ public class ConePlaceAuto extends LinearOpMode {
         waitForStart();
         caiden.closeClaw();
 
-        AutoStages.sequencer.start();
+        AutoStages.sequencer.start(AutoStages.closeClawOnPreloadCone);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
