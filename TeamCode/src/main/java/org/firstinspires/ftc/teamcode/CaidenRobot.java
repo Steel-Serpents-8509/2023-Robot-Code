@@ -259,11 +259,11 @@ public class CaidenRobot {
     }
     
     public void openClaw() {
-        Claw.setPosition(0.84);
+        Claw.setPosition(0.7);
     }
     
     public void closeClaw() {
-        Claw.setPosition(0.50);
+        Claw.setPosition(0.0);
     }
     
     public void driveElevator(double power) {
