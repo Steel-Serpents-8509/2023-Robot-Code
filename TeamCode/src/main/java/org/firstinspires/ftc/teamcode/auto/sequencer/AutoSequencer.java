@@ -3,11 +3,14 @@ package org.firstinspires.ftc.teamcode.auto.sequencer;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.*;
+import java.util.function.BooleanSupplier;
 
 
 public class AutoSequencer<T extends StageState> {
     
     private boolean started = false;
+    private boolean stageDebugging = false;
+    private BooleanSupplier moveToNextStage = null;
     T sharedState;
 
     Optional<Stage<T>> currentStageOpt = Optional.empty();
@@ -62,7 +65,7 @@ public class AutoSequencer<T extends StageState> {
         Stage<T> currentStage = getCurrentStage();
         
         // If the current stage is ending, call updateCurrentStage and update currentStage
-        if(currentStage.isEnd(sharedState)) {
+        if(currentStage.isEnd(sharedState) && (!stageDebugging || moveToNextStage.getAsBoolean())) {
             updateCurrentStage(currentStage.calcNextStage(sharedState).orElse(doNothingStage));
         }
 
@@ -91,5 +94,19 @@ public class AutoSequencer<T extends StageState> {
     private boolean isInInvalidRunningState() {
         return !started || !currentStageOpt.isPresent();
     }
-    
+
+    public boolean isStageDebugging() {
+        return stageDebugging;
+    }
+
+    public void enableStageDebugging(BooleanSupplier supplier) {
+        stageDebugging = true;
+        moveToNextStage = supplier;
+    }
+
+    public void disableStageDebugging() {
+        stageDebugging = false;
+        moveToNextStage = null;
+    }
+
 }
