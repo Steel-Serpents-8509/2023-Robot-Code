@@ -33,9 +33,6 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.controller.PIDController;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
 public class CaidenRobot {
     
     // The IMU sensor object
@@ -43,8 +40,7 @@ public class CaidenRobot {
 
     // State used for updating telemetry
     Orientation angles;
-    Acceleration gravity;
-    
+
     private double robotHeading  = 0;
     private double headingOffset = 0;
     private double headingError  = 0;
@@ -53,18 +49,8 @@ public class CaidenRobot {
     private final DcMotorEx BLMotor;
     private final DcMotorEx FRMotor;
     private final DcMotorEx FLMotor;
-    
-    private DcMotor headlightVoltage;
-    
-    private final double driveMotorP = 0.1;
-    private final double driveMotorI = 0;
-    private final double driveMotorD = 0;
-    private final double driveMotorF = 0;
-    private PIDFController FRDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
-    private PIDFController FLDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
-    private PIDFController BRDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
-    private PIDFController BLDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
 
+    private DcMotor headlightVoltage;
     private DcMotor LazySohum;
     private CRServo Jorj;
     private DistanceSensor distr;
@@ -82,7 +68,6 @@ public class CaidenRobot {
     private DcMotorEx Slidey2;
     PIDController elevatorController = new PIDController(.015, 0.0028, 0.0000);
     DistanceSensor distanceSensor;
-    GyroSensor gyro;
     DistanceSensor revDistanceSensor;
     boolean stopElevator = true;
     
@@ -141,11 +126,9 @@ public class CaidenRobot {
         Slidey2 = hardwareMap.get(DcMotorEx.class, "Slidey2");
         LazySohum = hardwareMap.get(DcMotor.class, "Lazy_Sohum");
         Claw = hardwareMap.get(Servo.class, "Claw");
-        //Magnet = hardwareMap.get(TouchSensor.class, "magnet");
         Jorj = hardwareMap.get(CRServo.class, "Jorj");
         Pot = hardwareMap.get(AnalogInput.class, "Pot");
         distr = hardwareMap.get(DistanceSensor.class, "distr");
-        //poleDistSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "MRRange");
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         headlight = hardwareMap.get(ServoImplEx.class, "headlight");
         headlight.setPwmRange(pwmRange);
@@ -177,43 +160,6 @@ public class CaidenRobot {
         Slidey.setMode(RunMode.RUN_WITHOUT_ENCODER);
         Slidey2.setMode(RunMode.RUN_WITHOUT_ENCODER);
 
-
-        
-        /*Thread elevatorThread = new Thread(() -> {
-            DcMotorEx Slidey = hardwareMap.get(DcMotorEx.class, "Slidey");
-            DcMotorEx Slidey2 = hardwareMap.get(DcMotorEx.class, "Slidey2");
-            Slidey.setDirection(DcMotorSimple.Direction.REVERSE);
-            Slidey2.setDirection(DcMotorSimple.Direction.REVERSE);
-
-            if(resetMotors) {
-                Slidey.setMode(RunMode.STOP_AND_RESET_ENCODER);
-                Slidey2.setMode(RunMode.STOP_AND_RESET_ENCODER);
-            }
-
-            Slidey.setMode(RunMode.RUN_WITHOUT_ENCODER);
-            Slidey2.setMode(RunMode.RUN_WITHOUT_ENCODER);
-
-            while(stopRobot.getAsBoolean()) {
-                double power = elevatorPowerAtomic.get();
-                Slidey.setPower(power);
-                Slidey2.setPower(power);
-                elevatorPositionAtomic.set(Slidey.getCurrentPosition());
-            }
-
-            Slidey.setPower(0);
-            Slidey2.setPower(0);
-
-        });
-
-        elevatorThread.start();*/
-        /*
-         *  Other Sensors
-         */
-         
-        //magnet = hardwareMap.get(TouchSensor.class, "magnet");
-        //distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
-        //revDistanceSensor = hardwareMap.get(DistanceSensor.class, "revDistance");
-        
     }
 
     public void stop() {
@@ -283,26 +229,15 @@ public class CaidenRobot {
     }
     
     public void goToElevatorPosition(int position) {
+        //TODO: refactor. It is not clear that driveElevator(0) tried to go to the target position
         targetElevatorPosition = Range.clip(position, 0, ELEVATOR_HEIGHT);
         driveElevator(0);
-
-        //elevatorPowerAtomic.set(Range.clip(elevatorController.calculate(getElevatorPosition(), targetElevatorPosition), -0.6, 0.7));
-
-
-        //Slidey.setPower(elevatorPowerAtomic.get());
-        //Slidey2.setPower(elevatorPowerAtomic.get());
-        //Slidey.setPower(elevatorPower);
-        //Slidey2.setPower(elevatorPower);
     }
     
     // Is it safe to move the turret?
     public static final int SAFE_ELEVATOR_POSITION = 100;
     public boolean safeToMoveTurret() {
         return Slidey.getCurrentPosition() > SAFE_ELEVATOR_POSITION;
-    }
-    
-    public void stopArm() {
-        
     }
     
     public void lazyL() {
@@ -361,32 +296,11 @@ public class CaidenRobot {
         }
     }
     
-    public void lazyGoToPosition(int position) {
-        position = Range.clip(position, leftLimit, rightLimit);
-        if(safeToMoveTurret()) {
-            LazySohum.setTargetPosition(position);
-            LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            LazySohum.setPower(0.7);
-        } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
-            LazySohum.setPower(0);
-            targetElevatorPosition = SAFE_ELEVATOR_POSITION + 200;
-        } else {
-            LazySohum.setPower(0);
-        }
-       
-    }
-    
     public void updateElevatorTargetPosition(int position){
         position = Range.clip(position, 6, ELEVATOR_HEIGHT);
         targetElevatorPosition = position;
     }
-    public void updateTurretTargetPosition(int position){
-        position = Range.clip(position, rightLimit, leftLimit);
-        targetTurretPosition = position;
-        if(turretDisplacement() > 3){
 
-        }
-    }
     public boolean elevatorIsInPosition() {
         double elevatorPosition = Slidey.getCurrentPosition();
         final int ELEVATOR_TOLERANCE = 90;
@@ -420,10 +334,6 @@ public class CaidenRobot {
     
     public void goToStrafePosition(int position) {
         goToPosition(position, -position, -position, position);
-    }
-    
-    public void goToPivotPosition(int position) {
-        goToPosition(position, -position, position, -position);
     }
     
     public void goToPosition(int FRPosition, int FLPosition, int BRPosition, int BLPosition) {
