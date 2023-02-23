@@ -117,13 +117,13 @@ public class TestTeleop extends OpMode {
 
         if (left){
             caiden.lazyL();
-            //caiden.horizontalSlideOut();
+            caiden.horizontalSlideOut();
         } else if (right){
             caiden.lazyR();
-            //caiden.horizontalSlideOut();
+            caiden.horizontalSlideOut();
         } else if (straight){
             caiden.lazyS();
-            //caiden.horizontalSlideIn();
+            caiden.horizontalSlideIn();
             //caiden.updateElevatorTargetPosition(5);
         }
         //robot stays straight

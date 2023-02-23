@@ -321,7 +321,7 @@ public class CaidenRobot {
     }
     
     // Is it safe to move the turret?
-    public static final int SAFE_ELEVATOR_POSITION = 200;
+    public static final int SAFE_ELEVATOR_POSITION = 150;
     public boolean safeToMoveTurret() {
         return Slidey.getCurrentPosition() > SAFE_ELEVATOR_POSITION;
     }
@@ -348,7 +348,7 @@ public class CaidenRobot {
 
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
             LazySohum.setPower(0);
-            targetElevatorPosition = SAFE_ELEVATOR_POSITION;
+            targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
         } else {
             LazySohum.setPower(0);
         }
