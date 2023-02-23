@@ -20,9 +20,9 @@ public class TestTeleop extends OpMode {
     double pivot = 0;
     int heading = 0;
     double headlightPower = 0;
-    int shortHeight = 915 / 12 * 5;
-    int medHeight = 1575 / 12 * 5;
-    int topHeight = 2050 / 12 * 5;
+    int shortHeight = 465;
+    int medHeight = 760;
+    int topHeight = 1000;
 
     boolean strafe1;
     boolean strafe2;
