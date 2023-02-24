@@ -25,7 +25,10 @@ public class Stage<T extends StageState> {
      * @return The inputted stage.
      */
     public Stage<T> nextStage(Stage<T> other) {
-        nextStageSupplier = state -> Optional.ofNullable(other);
+        if(other == null) {
+            throw new IllegalStateException("The next stage cannot be null");
+        }
+        nextStageSupplier = state -> Optional.of(other);
         return other;
     }
     
