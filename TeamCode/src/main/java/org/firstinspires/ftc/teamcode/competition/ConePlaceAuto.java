@@ -32,7 +32,6 @@ public class ConePlaceAuto extends LinearOpMode {
         
         AutoStages.sequencer.setDoNothingStage(new Stage<>("caiden.stop()", state -> caiden.stop()));
         
-        
         AutoStages.closeClawOnPreloadCone
         .nextStage(AutoStages.recognizeSignalWithTimeout)
         .nextStage(AutoStages.goRightToWall)
@@ -40,9 +39,7 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.findConeLinePosition)
         .nextStage(AutoStages.backupToShortPoleWithStartingCone)
         .nextStage(AutoStages.lowerStartingConeOntoPole)
-        .nextStage(AutoStages.openClawWithStartingCone);
-        
-        AutoStages.openClawWithStartingCone
+        .nextStage(AutoStages.openClawWithStartingCone)
         .nextStage(AutoStages.goBackToConeStack);
         
         AutoStages.lineUpWithConeStack

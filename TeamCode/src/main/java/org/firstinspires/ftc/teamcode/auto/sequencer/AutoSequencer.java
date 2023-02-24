@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.auto.sequencer;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.util.*;
 import java.util.function.BooleanSupplier;
 
 
@@ -13,39 +12,36 @@ public class AutoSequencer<T extends StageState> {
     private BooleanSupplier moveToNextStage = null;
     T sharedState;
 
-    Optional<Stage<T>> currentStageOpt = Optional.empty();
-    private Stage<T> doNothingStage;
-    
+    private Stage<T> doNothingStage = new Stage<>("Do nothing", ignored -> {});
+    Stage<T> currentStage = doNothingStage;
+
     public AutoSequencer(T state) {
         sharedState = state;
-        
-        doNothingStage = new Stage<>("Do nothing", ignored -> {});
-    } 
+    }
 
     public void setDoNothingStage(Stage<T> stage) {
         doNothingStage = stage;
     }
 
     public String getCurrentStageName() {
-        return currentStageOpt.map(Stage::getName).orElse("No current stage");
+        return currentStage.getName();
     }
     
     public void reset() {
         started = false;
-        currentStageOpt = Optional.empty();
+        currentStage = doNothingStage;
     }
     
-    public void start() {
+    public void start(Stage<T> startingStage) {
+        if(startingStage == null) {
+            throw new IllegalStateException("Starting stage cannot be null");
+        }
+        currentStage = startingStage;
         started = true;
         if(sharedState.stageElapsedTime == null) {
             sharedState.stageElapsedTime = new ElapsedTime();
         }
         sharedState.stageElapsedTime.reset();
-    }
-    
-    public void start(Stage<T> startingStage) {
-        currentStageOpt = Optional.of(startingStage);
-        start();
     }
 
     public boolean isStart() {
@@ -62,8 +58,6 @@ public class AutoSequencer<T extends StageState> {
             updateCurrentStage(doNothingStage);
         }
 
-        Stage<T> currentStage = getCurrentStage();
-        
         // If the current stage is ending, call updateCurrentStage and update currentStage
         if(currentStage.isEnd(sharedState) && (!stageDebugging || moveToNextStage.getAsBoolean())) {
             updateCurrentStage(currentStage.calcNextStage(sharedState).orElse(doNothingStage));
@@ -76,32 +70,25 @@ public class AutoSequencer<T extends StageState> {
         if(started) {
             finishCurrentStage();
         }
-        currentStageOpt = Optional.of(stage);
+        currentStage = stage;
         sharedState.stageElapsedTime.reset();
     }
 
     private void finishCurrentStage() {
-        getCurrentStage().finish(sharedState);
+        currentStage.finish(sharedState);
     }
 
-    private Stage<T> getCurrentStage() {
-        if(!currentStageOpt.isPresent()) {
-            throw new IllegalStateException("Current stage doesn't exist");
-        } else {
-            return currentStageOpt.get();
-        }
-    }
     private boolean isInInvalidRunningState() {
-        return !started || !currentStageOpt.isPresent();
+        return !started;
     }
 
     public boolean isStageDebugging() {
         return stageDebugging;
     }
 
-    public void enableStageDebugging(BooleanSupplier supplier) {
+    public void enableStageDebugging(BooleanSupplier moveToNextStageCondition) {
         stageDebugging = true;
-        moveToNextStage = supplier;
+        moveToNextStage = moveToNextStageCondition;
     }
 
     public void disableStageDebugging() {

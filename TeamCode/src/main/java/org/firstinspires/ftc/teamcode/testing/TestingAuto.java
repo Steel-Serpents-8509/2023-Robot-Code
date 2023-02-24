@@ -47,9 +47,7 @@ public class TestingAuto extends LinearOpMode {
         .nextStage(AutoStages.findConeLinePosition)
         .nextStage(AutoStages.backupToShortPoleWithStartingCone)
         .nextStage(AutoStages.lowerStartingConeOntoPole)
-        .nextStage(AutoStages.openClawWithStartingCone);
-        
-        AutoStages.openClawWithStartingCone
+        .nextStage(AutoStages.openClawWithStartingCone)
         .nextStage(AutoStages.goBackToConeStack);
         
         AutoStages.lineUpWithConeStack
