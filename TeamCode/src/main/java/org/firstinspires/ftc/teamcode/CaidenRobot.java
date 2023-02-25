@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import com.outoftheboxrobotics.photoncore.Neutrino.Rev2MSensor.Rev2mDistanceSensorEx;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -68,12 +71,12 @@ public class CaidenRobot {
     boolean stopElevator = true;
     
     private DcMotorEx HorizontalSlide;
-    private static int ELEVATOR_HEIGHT = 900 / 5 * 12;
+    private static int ELEVATOR_HEIGHT = 1060;
 
     int SAVED_ELEVATOR_POS = 0;
     int SAVED_LAZY_POS = 0;
-    public final int rightLimit = -1450 / 60 * 20;
-    public final int leftLimit = 440;
+    public final int rightLimit = -449;
+    public final int leftLimit = 450;
     double driveSpeedMultiplier = 1;
     
     private int shortHeight = 85 / 3 * 12;
@@ -89,7 +92,7 @@ public class CaidenRobot {
     }
     
     public CaidenRobot(HardwareMap hardwareMap, boolean resetMotors) {
-        
+        PhotonCore.enable();
         // Set up the parameters with which we will use our IMU. Note that integration
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
         // provide positional information.
@@ -124,7 +127,7 @@ public class CaidenRobot {
         Claw = hardwareMap.get(Servo.class, "Claw");
 
         HorizontalSlide = hardwareMap.get(DcMotorEx.class, "horiz_Slide");
-        distr = hardwareMap.get(DistanceSensor.class, "distr");
+        distr = hardwareMap.get(Rev2mDistanceSensorEx.class, "distr");
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         headlight = hardwareMap.get(ServoImplEx.class, "headlight");
         headlight.setPwmRange(pwmRange);
@@ -173,13 +176,7 @@ public class CaidenRobot {
          headlight.setPosition(power);
     }
     
-    public void enableHeadlight() {
-        headlightVoltage.setPower(1);
-    }
-    
-    public void disableHeadlight() {
-        headlightVoltage.setPower(0);
-    }
+
 
     public double getDistance() {
         return distr.getDistance(DistanceUnit.CM);
@@ -205,7 +202,7 @@ public class CaidenRobot {
                 stopElevator = true;
                 targetElevatorPosition = elevatorPosition;
             }            
-            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.7, 1);
+            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.3, 1);
             lastElevatorPower = elevatorPower;
         } else if((power < 0) && (elevatorPosition > 8)) {
             stopElevator = false;
@@ -494,7 +491,7 @@ public class CaidenRobot {
         telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
         //telemetry.addData("Servo Pow", Jorj.getPower());
         //telemetry.addData("Where is the Pot", Pot.getVoltage());
-        //telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
+        telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
         //telemetry.addData("arm desired pos", armPosition);
         //telemetry.addData("Red", colorSensor.red());
         //telemetry.addData("Blue", colorSensor.blue());

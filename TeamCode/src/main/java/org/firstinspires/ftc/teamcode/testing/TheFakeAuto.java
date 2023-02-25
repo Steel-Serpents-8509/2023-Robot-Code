@@ -61,7 +61,6 @@ public class TheFakeAuto extends LinearOpMode {
     public void runOpMode() {
         
         caiden = new CaidenRobot(hardwareMap);
-        caiden.enableHeadlight();
         caiden.setHeadlightPower(0.14);
         
         vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/black_shapes_good_videos.tflite");
@@ -76,7 +75,6 @@ public class TheFakeAuto extends LinearOpMode {
         
         
         recognizeSignalZone();
-        caiden.disableHeadlight();
         caiden.setHeadlightPower(0);
         
 

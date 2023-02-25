@@ -21,8 +21,8 @@ public class TestTeleop extends OpMode {
     int heading = 0;
     double headlightPower = 0;
     int shortHeight = 465;
-    int medHeight = 760;
-    int topHeight = 1000;
+    int medHeight = 810;
+    int topHeight = 1060;
 
     boolean strafe1;
     boolean strafe2;
@@ -210,7 +210,7 @@ public class TestTeleop extends OpMode {
         }
         //linear slide
         if (raise){
-            caiden.driveElevator(0.1);
+            caiden.driveElevator(0.3);
         }
         else if (lower){
             caiden.driveElevator(-0.1);

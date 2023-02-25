@@ -38,7 +38,7 @@ public class TheRealAuto extends LinearOpMode {
         caiden = new CaidenRobot(hardwareMap);
         vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
         //vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_original_sleeve_model.tflite");
-        caiden.enableHeadlight();
+        //caiden.enableHeadlight();
         caiden.setHeadlightPower(0.1);
 
 
@@ -58,7 +58,7 @@ public class TheRealAuto extends LinearOpMode {
         // Find zone
         recognizeSignalZone();
 
-        caiden.disableHeadlight();
+        //caiden.disableHeadlight();
         caiden.setHeadlightPower(0);
 
         // Go to zone

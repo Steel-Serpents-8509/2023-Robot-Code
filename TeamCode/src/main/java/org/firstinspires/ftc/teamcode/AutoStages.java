@@ -307,10 +307,8 @@ public class AutoStages {
             autoState.recognizedSignal = recognizedObjects.stream().max(Comparator.comparingDouble(Recognition::getConfidence)).get().getLabel();
         }
     }).setStartAction(autoState -> {
-        autoState.caiden.enableHeadlight();
         autoState.caiden.setHeadlightPower(0.06);
     }).setFinishAction(autoState -> {
-        autoState.caiden.disableHeadlight();
         autoState.caiden.setHeadlightPower(0.0);
     }).setIsEndPredicate(recognizeSignalIsEndPredicate);
 

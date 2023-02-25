@@ -90,7 +90,6 @@ public class ConePlaceAuto extends LinearOpMode {
         telemetry.addData("Starting Auto Stage", AutoStages.sequencer.getCurrentStageName());
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
-        caiden.enableHeadlight();
         caiden.setHeadlightPower(0.06);
         waitForStart();
         caiden.closeClaw();
