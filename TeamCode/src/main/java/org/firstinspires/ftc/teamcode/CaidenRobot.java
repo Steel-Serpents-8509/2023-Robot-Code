@@ -7,19 +7,15 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.PwmControl;
 
 
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -33,9 +29,6 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.controller.PIDController;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
 public class CaidenRobot {
     
     // The IMU sensor object
@@ -43,8 +36,7 @@ public class CaidenRobot {
 
     // State used for updating telemetry
     Orientation angles;
-    Acceleration gravity;
-    
+
     private double robotHeading  = 0;
     private double headingOffset = 0;
     private double headingError  = 0;
@@ -53,23 +45,8 @@ public class CaidenRobot {
     private final DcMotorEx BLMotor;
     private final DcMotorEx FRMotor;
     private final DcMotorEx FLMotor;
-    
-    private DcMotor headlightVoltage;
-    
-    private final PIDDriveMotor FRDrive;
-    private final PIDDriveMotor FLDrive;
-    private final PIDDriveMotor BRDrive;
-    private final PIDDriveMotor BLDrive;
-    
-    private final double driveMotorP = 0.1;
-    private final double driveMotorI = 0;
-    private final double driveMotorD = 0;
-    private final double driveMotorF = 0;
-    private PIDFController FRDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
-    private PIDFController FLDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
-    private PIDFController BRDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
-    private PIDFController BLDriveController = new PIDFController(driveMotorP, driveMotorI, driveMotorD, driveMotorF);
 
+    private DcMotor headlightVoltage;
     private DcMotor LazySohum;
 
     private DistanceSensor distr;
@@ -87,7 +64,6 @@ public class CaidenRobot {
     private DcMotorEx Slidey2;
     PIDController elevatorController = new PIDController(.015, 0.0028, 0.0000);
     DistanceSensor distanceSensor;
-    GyroSensor gyro;
     DistanceSensor revDistanceSensor;
     boolean stopElevator = true;
     
@@ -142,32 +118,20 @@ public class CaidenRobot {
         FRMotor = hardwareMap.get(DcMotorEx.class, "FRMotor");
         FLMotor = hardwareMap.get(DcMotorEx.class, "FLMotor");
 
-        FRDrive = new PIDDriveMotor(FRMotor, FRDriveController);
-        FLDrive = new PIDDriveMotor(FLMotor, FLDriveController);
-        BRDrive = new PIDDriveMotor(BRMotor, BRDriveController);
-        BLDrive = new PIDDriveMotor(BLMotor, BLDriveController);
-
         Slidey = hardwareMap.get(DcMotorEx.class, "Slidey");
         Slidey2 = hardwareMap.get(DcMotorEx.class, "Slidey2");
         LazySohum = hardwareMap.get(DcMotor.class, "Lazy_Sohum");
         Claw = hardwareMap.get(Servo.class, "Claw");
-        //Magnet = hardwareMap.get(TouchSensor.class, "magnet");
-
 
         HorizontalSlide = hardwareMap.get(DcMotorEx.class, "horiz_Slide");
         distr = hardwareMap.get(DistanceSensor.class, "distr");
-        //poleDistSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "MRRange");
         colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
         headlight = hardwareMap.get(ServoImplEx.class, "headlight");
         headlight.setPwmRange(pwmRange);
 
         BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        //HorizontalSlide.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
-        
-        
         if(resetMotors) {
             BRMotor.setMode(RunMode.STOP_AND_RESET_ENCODER);
             BLMotor.setMode(RunMode.STOP_AND_RESET_ENCODER);
@@ -189,43 +153,6 @@ public class CaidenRobot {
         Slidey2.setMode(RunMode.RUN_WITHOUT_ENCODER);
 
         HorizontalSlide.setMode(RunMode.RUN_WITHOUT_ENCODER);
-
-        
-        /*Thread elevatorThread = new Thread(() -> {
-            DcMotorEx Slidey = hardwareMap.get(DcMotorEx.class, "Slidey");
-            DcMotorEx Slidey2 = hardwareMap.get(DcMotorEx.class, "Slidey2");
-            Slidey.setDirection(DcMotorSimple.Direction.REVERSE);
-            Slidey2.setDirection(DcMotorSimple.Direction.REVERSE);
-
-            if(resetMotors) {
-                Slidey.setMode(RunMode.STOP_AND_RESET_ENCODER);
-                Slidey2.setMode(RunMode.STOP_AND_RESET_ENCODER);
-            }
-
-            Slidey.setMode(RunMode.RUN_WITHOUT_ENCODER);
-            Slidey2.setMode(RunMode.RUN_WITHOUT_ENCODER);
-
-            while(stopRobot.getAsBoolean()) {
-                double power = elevatorPowerAtomic.get();
-                Slidey.setPower(power);
-                Slidey2.setPower(power);
-                elevatorPositionAtomic.set(Slidey.getCurrentPosition());
-            }
-
-            Slidey.setPower(0);
-            Slidey2.setPower(0);
-
-        });
-
-        elevatorThread.start();*/
-        /*
-         *  Other Sensors
-         */
-         
-        //magnet = hardwareMap.get(TouchSensor.class, "magnet");
-        //distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
-        //revDistanceSensor = hardwareMap.get(DistanceSensor.class, "revDistance");
-        
     }
 
     public void stop() {
@@ -308,16 +235,9 @@ public class CaidenRobot {
 
     }
     public void goToElevatorPosition(int position) {
+        //TODO: refactor. It is not clear that driveElevator(0) tried to go to the target position
         targetElevatorPosition = Range.clip(position, 0, ELEVATOR_HEIGHT);
         driveElevator(0);
-
-        //elevatorPowerAtomic.set(Range.clip(elevatorController.calculate(getElevatorPosition(), targetElevatorPosition), -0.6, 0.7));
-
-
-        //Slidey.setPower(elevatorPowerAtomic.get());
-        //Slidey2.setPower(elevatorPowerAtomic.get());
-        //Slidey.setPower(elevatorPower);
-        //Slidey2.setPower(elevatorPower);
     }
     
     // Is it safe to move the turret?
@@ -330,8 +250,6 @@ public class CaidenRobot {
         Slidey.setPower(power);
         Slidey2.setPower(power);
     }
-    
-
 
     public void poorPID() {
         power(.4);
@@ -340,6 +258,7 @@ public class CaidenRobot {
         Slidey2.setPower(Slidey.getPower());
 
     }
+
     public void lazyL() {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(leftLimit);
@@ -398,7 +317,7 @@ public class CaidenRobot {
             LazySohum.setTargetPosition(0);
             LazySohum.setPower(0.5);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
-            
+
             driveElevator(-1);
         }
     }
@@ -422,13 +341,7 @@ public class CaidenRobot {
         position = Range.clip(position, 0, ELEVATOR_HEIGHT);
         targetElevatorPosition = position;
     }
-    public void updateTurretTargetPosition(int position){
-        position = Range.clip(position, rightLimit, leftLimit);
-        targetTurretPosition = position;
-        if(turretDisplacement() > 3){
 
-        }
-    }
     public boolean elevatorIsInPosition() {
         double elevatorPosition = Slidey.getCurrentPosition();
         final int ELEVATOR_TOLERANCE = 90;
@@ -447,25 +360,7 @@ public class CaidenRobot {
         BRMotor.setPower(backRightPower * driveSpeedMultiplier);
         BLMotor.setPower(backLeftPower * driveSpeedMultiplier);
     }
-    
-    public void driveMotors(double frontRightPower, double frontLeftPower, double backRightPower, double backLeftPower) {
-        if(Slidey.getCurrentPosition() >= 700) {
-            driveSpeedMultiplier = 0.5;
-        } else {
-            driveSpeedMultiplier = 1;
-        }
-        FRDrive.setVelocity(4000 * frontRightPower * driveSpeedMultiplier);
-        FLDrive.setVelocity(4000 * frontLeftPower * driveSpeedMultiplier);
-        BRDrive.setVelocity(4000 * backRightPower * driveSpeedMultiplier);
-        BLDrive.setVelocity(4000 * backLeftPower * driveSpeedMultiplier);
-        
-        FRDrive.update();
-        FLDrive.update();
-        BRDrive.update();
-        BLDrive.update();
-        
-    }
-    
+
     public void driveRawPowerInAuto(double frontRightPower, double frontLeftPower, double backRightPower, double backLeftPower) {
 
         FRMotor.setPower(frontRightPower * driveSpeedMultiplier);
@@ -481,11 +376,7 @@ public class CaidenRobot {
     public void goToStrafePosition(int position) {
         goToPosition(position, -position, -position, position);
     }
-    
-    public void goToPivotPosition(int position) {
-        goToPosition(position, -position, position, -position);
-    }
-    
+
     public void goToPosition(int FRPosition, int FLPosition, int BRPosition, int BLPosition) {
        
         FRMotor.setPower(0);

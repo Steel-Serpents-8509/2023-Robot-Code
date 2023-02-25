@@ -1,8 +1,6 @@
-package org.firstinspires.ftc.teamcode.AutoSequencer;
+package org.firstinspires.ftc.teamcode.auto.sequencer;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-import java.util.function.*;
-import java.util.*;
 
 public abstract class StageState {
 
