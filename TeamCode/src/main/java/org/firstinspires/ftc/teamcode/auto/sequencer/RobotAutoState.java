@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.auto.sequencer;
 
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.wpilibcontroller.ProfiledPIDController;
+import com.arcrobotics.ftclib.trajectory.TrapezoidProfile;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -16,7 +18,7 @@ public class RobotAutoState extends StageState {
 
     public static final PIDController forwardController = new PIDController(0.004, 0.001, 0.0005);
     public static final PIDController strafeController = new PIDController(0.01, 0.025, 0.0);
-    public static final PIDController rangeSensorController = new PIDController(0.1, 0.06, 0.0003);
+    public static final ProfiledPIDController rangeSensorController = new ProfiledPIDController(0.06, 0.002, 0.0, new TrapezoidProfile.Constraints(1, 0.3));
     public static final PIDController anglePID = new PIDController(0.027, 0.006, 0.002);
 
     public double power;

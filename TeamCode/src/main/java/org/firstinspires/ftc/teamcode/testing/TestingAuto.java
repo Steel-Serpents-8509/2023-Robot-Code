@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.teamcode.CustomVision;
-import org.firstinspires.ftc.teamcode.CaidenRobot;
-import org.firstinspires.ftc.teamcode.AutoStages;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.AutoStages;
+import org.firstinspires.ftc.teamcode.ButtonDebounce;
+import org.firstinspires.ftc.teamcode.CaidenRobot;
+import org.firstinspires.ftc.teamcode.CustomVision;
 import org.firstinspires.ftc.teamcode.auto.sequencer.RobotAutoState;
 import org.firstinspires.ftc.teamcode.auto.sequencer.Stage;
 
@@ -18,15 +20,8 @@ public class TestingAuto extends LinearOpMode {
 
     CaidenRobot caiden;
     
-    // 3600 = 72.5in
-    // 1800 = 36.25in
-    // 1800 + 1800 = 70in
-    /*
-        1800 = 35.5 
-        1800 + 1800 = 71
-    */
-
-
+    ElapsedTime loopTime = new ElapsedTime();
+    
     @SuppressLint("SdCardPath")
     @Override
     public void runOpMode() {
@@ -35,60 +30,34 @@ public class TestingAuto extends LinearOpMode {
         AutoStages.state.reset();
         
         caiden = new CaidenRobot(hardwareMap);
+
+        ButtonDebounce debounce = new ButtonDebounce();
+        AutoStages.sequencer.enableStageDebugging(() -> debounce.getButton(gamepad1.a));
+
         AutoStages.state.caiden = caiden;
-        AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/black_shapes_good_videos.tflite");
+        AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
+        AutoStages.state.telemetry = telemetry;
         
         AutoStages.sequencer.setDoNothingStage(new Stage<>("caiden.stop()", state -> caiden.stop()));
-        
-        AutoStages.closeClawOnPreloadCone
-        .nextStage(AutoStages.recognizeSignalWithTimeout)
-        .nextStage(AutoStages.goRightToWall)
-        .nextStage(AutoStages.goForwardToConeStackWithStartingCone)
-        .nextStage(AutoStages.findConeLinePosition)
-        .nextStage(AutoStages.backupToShortPoleWithStartingCone)
-        .nextStage(AutoStages.lowerStartingConeOntoPole)
-        .nextStage(AutoStages.openClawWithStartingCone)
-        .nextStage(AutoStages.goBackToConeStack);
-        
-        AutoStages.lineUpWithConeStack
-        .nextStage(AutoStages.approachConeStack)
-        .nextStage(AutoStages.grabCone)
-        .nextStage(AutoStages.liftElevatorToClearConeStack)
-        .nextStage(AutoStages.backupToShortPole)
-        .nextStage(AutoStages.lowerConeOntoPole)
-        .nextStage(AutoStages.openClaw)
-        .nextStage(AutoStages.clearLowGoal)
-        .nextStage(AutoStages.goBackToConeStack);
-        
-        
-        AutoStages.goBackToConeStack.setNextStageFunction(state -> {
-            if(state.currentCone >= state.maxCone) {
-                return Optional.empty();
-            } else {
-                return Optional.of(AutoStages.approachConeStack);
-            }
-        });
 
         RobotAutoState.forwardController.setTolerance(30);
-        RobotAutoState.strafeController.setTolerance(30);
+        RobotAutoState.strafeController.setTolerance(40);
         RobotAutoState.anglePID.setTolerance(2);
         RobotAutoState.rangeSensorController.setTolerance(2.2);
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Starting Auto Stage", AutoStages.sequencer.getCurrentStageName());
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
+        caiden.setHeadlightPower(0.06);
         waitForStart();
+        caiden.closeClaw();
 
-        AutoStages.sequencer.start(AutoStages.closeClawOnPreloadCone);
+        AutoStages.sequencer.start(AutoStages.goRightToWall);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            
-            
             AutoStages.sequencer.run();
             updateTelemetry();
-            
-
         }
     }
     
@@ -100,9 +69,14 @@ public class TestingAuto extends LinearOpMode {
         telemetry.addData("Recognized Signal", AutoStages.state.recognizedSignal);
         telemetry.addData("Seeing Line", AutoStages.seeingConeLine());
         telemetry.addData("Seen Line", AutoStages.state.seenConeLine);
+        telemetry.addData("Current Cone", AutoStages.state.currentCone);
+        telemetry.addData("Max Cone", AutoStages.state.maxCone);
         caiden.updateTelemetry(telemetry);
+        telemetry.addData("Loop Time", loopTime.milliseconds());
+        loopTime.reset();
         telemetry.update();
     }
+    
 }
     
 

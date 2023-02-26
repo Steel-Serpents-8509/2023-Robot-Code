@@ -34,12 +34,12 @@ public class EndPredicates {
         return false;
     };
     public static final Predicate<RobotAutoState> rangeControllerIsEndPredicate = autoState -> {
-        if(RobotAutoState.rangeSensorController.atSetPoint() && RobotAutoState.anglePID.atSetPoint() && !autoState.robotInPosition) {
+        if(RobotAutoState.rangeSensorController.atGoal() && RobotAutoState.anglePID.atSetPoint() && !autoState.robotInPosition) {
             autoState.stageElapsedTime.reset();
             autoState.robotInPosition = true;
-        } else if(!RobotAutoState.rangeSensorController.atSetPoint() && autoState.robotInPosition) {
+        } else if(!RobotAutoState.rangeSensorController.atGoal() && autoState.robotInPosition) {
             autoState.robotInPosition = false;
-        } else return RobotAutoState.rangeSensorController.atSetPoint() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 400;
+        } else return RobotAutoState.rangeSensorController.atGoal() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 400;
         return false;
     };
 

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.ButtonDebounce;
 import org.firstinspires.ftc.teamcode.CustomVision;
 import org.firstinspires.ftc.teamcode.CaidenRobot;
 import org.firstinspires.ftc.teamcode.AutoStages;
@@ -26,12 +28,17 @@ public class ConePlaceAuto extends LinearOpMode {
         AutoStages.state.reset();
         
         caiden = new CaidenRobot(hardwareMap);
+
+        ButtonDebounce debounce = new ButtonDebounce();
+        AutoStages.sequencer.enableStageDebugging(() -> debounce.getButton(gamepad1.a));
+
         AutoStages.state.caiden = caiden;
         AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
         AutoStages.state.telemetry = telemetry;
         
         AutoStages.sequencer.setDoNothingStage(new Stage<>("caiden.stop()", state -> caiden.stop()));
-        
+
+
         AutoStages.closeClawOnPreloadCone
         .nextStage(AutoStages.recognizeSignalWithTimeout)
         .nextStage(AutoStages.goRightToWall)

@@ -30,6 +30,7 @@ public class AutoSequencer<T extends StageState> {
     public void reset() {
         started = false;
         currentStage = doNothingStage;
+        disableStageDebugging();
     }
     
     public void start(Stage<T> startingStage) {

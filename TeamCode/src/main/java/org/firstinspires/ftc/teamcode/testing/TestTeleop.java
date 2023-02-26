@@ -148,8 +148,7 @@ public class TestTeleop extends OpMode {
 
         if(Out){
             caiden.horizontalSlideOut();
-        }
-        if(In){
+        }  else if(In){
             caiden.horizontalSlideIn();
         }
         //Make robot go vroom vroom
