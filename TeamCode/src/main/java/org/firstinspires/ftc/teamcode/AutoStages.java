@@ -32,7 +32,7 @@ public class AutoStages {
                 -autoState.power - autoState.pivot,
                 -autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
-        autoState.caiden.goToElevatorPosition(915);
+        autoState.caiden.goToShortElevatorPosition();
         autoState.caiden.lazyL();
         autoState.caiden.closeClaw();
     };

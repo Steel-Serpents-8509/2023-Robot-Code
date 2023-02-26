@@ -471,7 +471,7 @@ public class CaidenRobot {
 //        //telemetry.addData("Turret", LazySohum.getCurrentPosition());
 //        //telemetry.addData("Magnet", Magnet.getValue());
         telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
-//        telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
+        telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
 //        //telemetry.addData("arm desired pos", armPosition);
 //        //telemetry.addData("Red", colorSensor.red());
 //        //telemetry.addData("Blue", colorSensor.blue());
