@@ -305,14 +305,19 @@ public class CaidenRobot {
 
     public void goToLowElevatorPosition() {
         updateElevatorTargetPosition(SHORT_ELEVATOR_HEIGHT);
+        driveElevator(0);
     }
 
     public void goToMediumElevatorPosition() {
         updateElevatorTargetPosition(MEDIUM_ELEVATOR_HEIGHT);
+        driveElevator(0);
+
     }
 
     public void goToHighElevatorPosition() {
         updateElevatorTargetPosition(HIGH_ELEVATOR_HEIGHT);
+        driveElevator(0);
+
     }
 
     public void updateElevatorTargetPosition(int position){

@@ -60,7 +60,7 @@ public class TheRealAuto extends LinearOpMode {
 
         //caiden.disableHeadlight();
         caiden.setHeadlightPower(0);
-
+        caiden.lazyS();
         // Go to zone
         goToZone();
 
@@ -89,7 +89,7 @@ public class TheRealAuto extends LinearOpMode {
     private void goToZone1() {
         caiden.goToStrafePosition(2350);
         while(caiden.isBusy()){
-            caiden.goToElevatorPosition(915);
+            caiden.goToLowElevatorPosition();
             postTelemetry();
             idle();
         }
@@ -98,7 +98,7 @@ public class TheRealAuto extends LinearOpMode {
 
         caiden.goToForwardPosition(2400);
         while(caiden.isBusy()){
-            caiden.goToElevatorPosition(915);
+            caiden.goToLowElevatorPosition();
             postTelemetry();
             idle();
         }
@@ -117,14 +117,14 @@ public class TheRealAuto extends LinearOpMode {
     private void goToZone2() {
         caiden.goToForwardPosition(3000);
         while(caiden.isBusy()){
-            caiden.goToElevatorPosition(915);
+            caiden.goToLowElevatorPosition();
             postTelemetry();
             idle();
         }
 
         caiden.goToForwardPosition(2400);
         while(caiden.isBusy()){
-            caiden.goToElevatorPosition(915);
+            caiden.goToLowElevatorPosition();
             postTelemetry();
             idle();
         }
@@ -141,7 +141,7 @@ public class TheRealAuto extends LinearOpMode {
     private void goToZone3() {
         caiden.goToStrafePosition(-2350);
         while(caiden.isBusy()){
-            caiden.goToElevatorPosition(915);
+            caiden.goToLowElevatorPosition();
             postTelemetry();
             idle();
         }
@@ -150,7 +150,7 @@ public class TheRealAuto extends LinearOpMode {
 
         caiden.goToForwardPosition(2400);
         while(caiden.isBusy()) {
-            caiden.goToElevatorPosition(915);
+            caiden.goToLowElevatorPosition();
             postTelemetry();
             idle();
         }
@@ -169,7 +169,7 @@ public class TheRealAuto extends LinearOpMode {
                 caiden.closeClaw();
             } else {
                 caiden.closeClaw();
-                caiden.goToElevatorPosition(915);
+                caiden.goToLowElevatorPosition();
             }
 
             List<Recognition> recognizedObjects = vision.lookForObject();

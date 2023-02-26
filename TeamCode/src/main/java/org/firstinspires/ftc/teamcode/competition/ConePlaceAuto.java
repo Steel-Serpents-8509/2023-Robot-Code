@@ -30,7 +30,7 @@ public class ConePlaceAuto extends LinearOpMode {
         caiden = new CaidenRobot(hardwareMap);
 
         ButtonDebounce debounce = new ButtonDebounce();
-        AutoStages.sequencer.enableStageDebugging(() -> debounce.getButton(gamepad1.a));
+        //AutoStages.sequencer.enableStageDebugging(() -> debounce.getButton(gamepad1.a));
 
         AutoStages.state.caiden = caiden;
         AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");

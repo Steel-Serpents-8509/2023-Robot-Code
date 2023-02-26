@@ -84,7 +84,7 @@ public class AutoStages {
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.goToElevatorPosition(915);
+        autoState.caiden.goToLowElevatorPosition();
         autoState.caiden.lazyL();
         autoState.caiden.closeClaw();
     })
@@ -258,7 +258,7 @@ public class AutoStages {
     public static final Stage<RobotAutoState> closeClawOnPreloadCone = new Stage<RobotAutoState>("Close claw on preloaded cone", autoState -> {
         autoState.caiden.closeClaw();
         if (autoState.stageElapsedTime.milliseconds() > 1000) {
-            autoState.caiden.goToElevatorPosition(915);
+            autoState.caiden.goToLowElevatorPosition();
         }
     }).setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 1400);
 
@@ -277,7 +277,7 @@ public class AutoStages {
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.goToElevatorPosition(915);
+        autoState.caiden.goToLowElevatorPosition();
         autoState.caiden.lazyL();
         autoState.caiden.closeClaw();
 
