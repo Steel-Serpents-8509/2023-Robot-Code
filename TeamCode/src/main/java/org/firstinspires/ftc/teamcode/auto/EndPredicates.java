@@ -17,11 +17,11 @@ public class EndPredicates {
 
     public static final Predicate<RobotAutoState> forwardControllerIsEndPredicate = autoState -> {
         if(RobotAutoState.forwardController.atSetPoint() && RobotAutoState.anglePID.atSetPoint() && !autoState.robotInPosition) {
-            autoState.stageElapsedTime.reset();
+            autoState.elapsedTimeInPosition.reset();
             autoState.robotInPosition = true;
         } else if(!RobotAutoState.forwardController.atSetPoint() && autoState.robotInPosition) {
             autoState.robotInPosition = false;
-        } else return RobotAutoState.forwardController.atSetPoint() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 400;
+        } else return RobotAutoState.forwardController.atSetPoint() && autoState.robotInPosition && autoState.elapsedTimeInPosition.milliseconds() > 400;
         return false;
     };
     public static final Predicate<RobotAutoState> strafeControllerIsEndPredicate = autoState -> {

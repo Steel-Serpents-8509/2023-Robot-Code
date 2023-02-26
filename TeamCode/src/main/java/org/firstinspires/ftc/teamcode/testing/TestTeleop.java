@@ -9,6 +9,8 @@ import org.firstinspires.ftc.teamcode.CaidenRobot;
 import com.arcrobotics.ftclib.controller.PIDController;
 
 import org.firstinspires.ftc.teamcode.ButtonDebounce;
+import org.firstinspires.ftc.teamcode.Turret_state;
+
 @TeleOp
 
 public class TestTeleop extends OpMode {
@@ -20,15 +22,12 @@ public class TestTeleop extends OpMode {
     double pivot = 0;
     int heading = 0;
     double headlightPower = 0;
-    int shortHeight = 465;
-    int medHeight = 810;
-    int topHeight = 1060;
 
     boolean strafe1;
     boolean strafe2;
     boolean raise;
     boolean lower;
-
+    Turret_state turretState;
 
     boolean close;
     boolean open;
@@ -91,9 +90,14 @@ public class TestTeleop extends OpMode {
         straight = gamepad2.a;
         right = gamepad2.x;
 
-        telemetry.addData("ForwardPower", forward);
-        telemetry.addData("HorizontalPower", horizontal);
-        //telemetry.addData("ForwardPower", vertical);
+        if(gamepad2.b) {
+            turretState = Turret_state.LEFT;
+        } else if(gamepad2.a) {
+            turretState = Turret_state.FORWARD;
+        } else if(gamepad2.x) {
+            turretState = Turret_state.RIGHT;
+        }
+
         if(rotateCCW90.getButton(gamepad1.left_bumper)){
             if (heading != 180){
                 heading+=90;
@@ -115,23 +119,15 @@ public class TestTeleop extends OpMode {
             headingAdjustment -= 3;
         }
 
-        if (left){
+        if (gamepad2.b){
             caiden.lazyL();
             caiden.horizontalSlideOut();
-        } else if (right){
+        } else if (gamepad2.x){
             caiden.lazyR();
             caiden.horizontalSlideOut();
-        } else if (straight){
+        } else if (gamepad2.a){
             caiden.lazyS();
             caiden.horizontalSlideIn();
-            //caiden.updateElevatorTargetPosition(5);
-        }
-        //robot stays straight
-        //if(currentY) {
-            //enablePID = false;
-        //}
-        if(currentX) {
-            enablePID = false;
         }
 
         if(enablePID) {
@@ -165,14 +161,8 @@ public class TestTeleop extends OpMode {
             double power = 0.7;
             caiden.driveRawPower(-power, power, power, -power);
         } else {
-            /*double BRPower = (pivot + (-vertical + horizontal));
-            double BLPower = (pivot + (-vertical - horizontal));
-            double FRPower = (pivot + (-vertical + horizontal));
-            double FLPower = (pivot + (-vertical - horizontal));*/
-
             double angle = caiden.getCachedHeading() * Math.PI/180;
             double powerMultiplier = gamepad1.a ? 0.5 : 1;
-            //angle = 0;
 
             double forwardCos = forward * Math.cos(angle);
             double forwardSin = -forward * Math.sin(angle);
@@ -186,35 +176,29 @@ public class TestTeleop extends OpMode {
             double FLPower = (fieldOrientedForward - fieldOrientedHorizontal - pivot) * powerMultiplier;
             double BRPower = (fieldOrientedForward - fieldOrientedHorizontal + pivot) * powerMultiplier;
             double BLPower = (fieldOrientedForward + fieldOrientedHorizontal - pivot) * powerMultiplier;
-            /*double FRPower = (forward + horizontal + pivot);
-            double FLPower = (forward - horizontal - pivot);
-            double BRPower = (forward - horizontal + pivot);
-            double BLPower = (forward + horizontal - pivot);*/
-            caiden.driveRawPower(FRPower, FLPower, BRPower, BLPower);
-            //caiden.driveMotors(FRPower, FLPower, BRPower, BLPower);
 
+            caiden.driveRawPower(FRPower, FLPower, BRPower, BLPower);
         }
-        if (first){
+
+        if (first) {
             caiden.updateElevatorTargetPosition(0);
-            //saveRaise = true;
+        } else if (second){
+            caiden.goToShortElevatorPosition();
+        } else if (third){
+            caiden.goToMediumElevatorPosition();
+        } else if (fourth){
+            caiden.goToHighElevatorPosition();
         }
-        if (second){
-            caiden.updateElevatorTargetPosition(shortHeight);
-        }
-        if (third){
-            caiden.updateElevatorTargetPosition(medHeight);
-        }
-        if (fourth){
-            caiden.updateElevatorTargetPosition(topHeight);
-            //saveRaise = false;
-        }
+
         //linear slide
         if (raise){
             caiden.driveElevator(0.3);
-        }
-        else if (lower){
+        } else if (lower){
             caiden.driveElevator(-0.1);
+        } else {
+            caiden.driveElevator(0);
         }
+
         //Pinchy
         if (open){
             caiden.openClaw();
@@ -225,14 +209,11 @@ public class TestTeleop extends OpMode {
         if (test){
             caiden.resets();
         }
-        if(!(raise || lower)) {
-            caiden.driveElevator(0);
-        }
+
         //elbow code
         if(Outc){
             caiden.horizontalSlideOut();
-        }
-        if(Inc){
+        } else if(Inc){
             caiden.horizontalSlideIn();
         }
 
@@ -243,30 +224,34 @@ public class TestTeleop extends OpMode {
         caiden = new CaidenRobot(hardwareMap, true);
         anglePID = new PIDController(0.019, 0.01, 0.000);
         PhotonCore.enable();
+        caiden.openClaw();
     }
 
     private void sendTelemetry() {
 
-        telemetry.addData("PID Enabled", enablePID);
-        telemetry.addData("SetHeading", heading);
-        telemetry.addData("Headlight Power", headlightPower);
-        telemetry.addData("Heading Difference", headingDifference);
-        telemetry.addData("Heading Difference Sign", headingDifferenceSign);
-        telemetry.addData("Heading Adjustment", headingAdjustment);
-
-        telemetry.addData("Error in turret", caiden.turretDisplacement());
+//        telemetry.addData("PID Enabled", enablePID);
+//        telemetry.addData("SetHeading", heading);
+//        telemetry.addData("Headlight Power", headlightPower);
+//        telemetry.addData("Heading Difference", headingDifference);
+//        telemetry.addData("Heading Difference Sign", headingDifferenceSign);
+//        telemetry.addData("Heading Adjustment", headingAdjustment);
+//
+//        telemetry.addData("Error in turret", caiden.turretDisplacement());
 
         caiden.updateTelemetry(telemetry);
         telemetry.addData("Loop Time", loopTime.milliseconds());
-        telemetry.update();
         loopTime.reset();
+        telemetry.update();
 
     }
 
     @Override
+    public void start() {
+        caiden.lazyS();
+    }
+    @Override
     public void loop() {
         moveDriveTrain();
         sendTelemetry();
-        caiden.updateTelemetry(telemetry);
     }
 }

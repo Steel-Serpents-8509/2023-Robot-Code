@@ -65,7 +65,7 @@ public class CaidenRobot {
     
     public DcMotorEx Slidey;
     private DcMotorEx Slidey2;
-    PIDController elevatorController = new PIDController(.015, 0.0028, 0.0000);
+    PIDController elevatorController = new PIDController(0.02, 0.0028, 0.0000);
     DistanceSensor distanceSensor;
     DistanceSensor revDistanceSensor;
     boolean stopElevator = true;
@@ -78,9 +78,11 @@ public class CaidenRobot {
     public final int rightLimit = -449;
     public final int leftLimit = 450;
     double driveSpeedMultiplier = 1;
-    
-    private int shortHeight = 85 / 3 * 12;
-    private int medHeight = 268 / 3 * 12;
+
+    private static final int SHORT_ELEVATOR_HEIGHT = 465;
+    private static final int MEDIUM_ELEVATOR_HEIGHT = 790;
+    private static final int HIGH_ELEVATOR_HEIGHT = 1060;
+
     private int targetElevatorPosition = 0;
     private int targetTurretPosition = 0;
 
@@ -192,26 +194,22 @@ public class CaidenRobot {
     
     public void driveElevator(double power) {
 
-        int elevatorPosition = Slidey.getCurrentPosition();
+        lastElevatorPosition = Slidey.getCurrentPosition();
 
-
-        if(targetElevatorPosition < 10 && elevatorPosition < 10 && power == 0) {
+        if(targetElevatorPosition < 20 && lastElevatorPosition < 20 && power == 0) {
             lastElevatorPower = (0.0);
         } else if(power == 0) {
             if (!stopElevator){
                 stopElevator = true;
-                targetElevatorPosition = elevatorPosition;
-            }            
-            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, targetElevatorPosition), -.7, 1);
-            lastElevatorPower = elevatorPower;
-        } else if((power < 0) && (elevatorPosition > 8)) {
+                targetElevatorPosition = lastElevatorPosition;
+            }
+            lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, targetElevatorPosition), -.7, 1);
+        } else if((power < 0) && (lastElevatorPosition > 8)) {
             stopElevator = false;
-            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, 20), -0.7, 0);
-            lastElevatorPower = elevatorPower;
+            lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, 10), -0.7, 0);
         } else if (power > 0) {
             stopElevator = false;
-            double elevatorPower = Range.clip(elevatorController.calculate(elevatorPosition, ELEVATOR_HEIGHT), -0.3, .7);
-            lastElevatorPower = elevatorPower;
+            lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, ELEVATOR_HEIGHT), -0.3, .7);
         }
 
         Slidey.setPower(lastElevatorPower);
@@ -262,21 +260,10 @@ public class CaidenRobot {
             LazySohum.setPower(0.5);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
 
-        } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
+        } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION && (Math.abs(LazySohum.getCurrentPosition() - leftLimit) > 150)) {
             LazySohum.setPower(0);
             targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
-        } else {
-            LazySohum.setPower(0);
         }
-        if (300 < LazySohum.getCurrentPosition() && LazySohum.getPower() == 0){
-
-            LazySohum.setTargetPosition(leftLimit);
-            LazySohum.setPower(0.5);
-            LazySohum.setMode(RunMode.RUN_TO_POSITION);
-
-            driveElevator(-1);
-        }
-
     }
     public void lazyR () {
         if(safeToMoveTurret()) {
@@ -284,18 +271,9 @@ public class CaidenRobot {
             LazySohum.setPower(0.5);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
 
-        } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
+        } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION && (Math.abs(LazySohum.getCurrentPosition() - rightLimit) > 150)) {
             LazySohum.setPower(0);
             targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
-        } else {
-            LazySohum.setPower(0);
-        }
-        if (LazySohum.getCurrentPosition() < -300 && LazySohum.getPower() == 0){
-            LazySohum.setTargetPosition(rightLimit);
-            LazySohum.setPower(0.5);
-            LazySohum.setMode(RunMode.RUN_TO_POSITION);
-
-            driveElevator(-1);
         }
     }
     public void lazyS(){
@@ -304,18 +282,9 @@ public class CaidenRobot {
             LazySohum.setPower(0.5);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
 
-        } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION) {
+        } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION && (Math.abs(LazySohum.getCurrentPosition()) > 150)) {
             LazySohum.setPower(0);
             targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
-        } else {
-            LazySohum.setPower(0);
-        }
-        if (-100 < LazySohum.getCurrentPosition() && LazySohum.getCurrentPosition() < 100 && LazySohum.getPower() == 0){
-            LazySohum.setTargetPosition(0);
-            LazySohum.setPower(0.5);
-            LazySohum.setMode(RunMode.RUN_TO_POSITION);
-
-            driveElevator(-1);
         }
     }
     
@@ -333,7 +302,19 @@ public class CaidenRobot {
         }
        
     }
-    
+
+    public void goToShortElevatorPosition() {
+        updateElevatorTargetPosition(SHORT_ELEVATOR_HEIGHT);
+    }
+
+    public void goToMediumElevatorPosition() {
+        updateElevatorTargetPosition(MEDIUM_ELEVATOR_HEIGHT);
+    }
+
+    public void goToHighElevatorPosition() {
+        updateElevatorTargetPosition(HIGH_ELEVATOR_HEIGHT);
+    }
+
     public void updateElevatorTargetPosition(int position){
         position = Range.clip(position, 0, ELEVATOR_HEIGHT);
         targetElevatorPosition = position;
@@ -347,7 +328,7 @@ public class CaidenRobot {
     }
     
     public void driveRawPower(double frontRightPower, double frontLeftPower, double backRightPower, double backLeftPower) {
-        if(Slidey.getCurrentPosition() >= 1700) {
+        if(Slidey.getCurrentPosition() >= 600) {
             driveSpeedMultiplier = 0.5;
         } else {
             driveSpeedMultiplier = 1;
@@ -480,23 +461,22 @@ public class CaidenRobot {
     }
     
     public void updateTelemetry(Telemetry telemetry) {
-        //telemetry.addData("MR Distance", poleDistSensor.getDistance(DistanceUnit.CM));
-        telemetry.addData("BRcount", BRMotor.getCurrentPosition());
-        //telemetry.addData("FRcount", FRMotor.getCurrentPosition());
-        telemetry.addData("FRcount", FRMotor.getCurrentPosition());
-        telemetry.addData("Elevator Position", Slidey.getCurrentPosition());
+//        //telemetry.addData("MR Distance", poleDistSensor.getDistance(DistanceUnit.CM));
+//        telemetry.addData("BRcount", BRMotor.getCurrentPosition());
+//        //telemetry.addData("FRcount", FRMotor.getCurrentPosition());
+//        telemetry.addData("FRcount", FRMotor.getCurrentPosition());
+//        telemetry.addData("Elevator Position", Slidey.getCurrentPosition());
         telemetry.addData("Elevator power", lastElevatorPower);
-        //telemetry.addData("Turret", LazySohum.getCurrentPosition());
-        //telemetry.addData("Magnet", Magnet.getValue());
+        telemetry.addData("Last Elevator Position", lastElevatorPosition);
+//        //telemetry.addData("Turret", LazySohum.getCurrentPosition());
+//        //telemetry.addData("Magnet", Magnet.getValue());
         telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
-        //telemetry.addData("Servo Pow", Jorj.getPower());
-        //telemetry.addData("Where is the Pot", Pot.getVoltage());
-        telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
-        //telemetry.addData("arm desired pos", armPosition);
-        //telemetry.addData("Red", colorSensor.red());
-        //telemetry.addData("Blue", colorSensor.blue());
-        //telemetry.addData("Green", colorSensor.green());
-        telemetry.addData("horiz slide", HorizontalSlide.getCurrentPosition());
+//        telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
+//        //telemetry.addData("arm desired pos", armPosition);
+//        //telemetry.addData("Red", colorSensor.red());
+//        //telemetry.addData("Blue", colorSensor.blue());
+//        //telemetry.addData("Green", colorSensor.green());
+//        telemetry.addData("horiz slide", HorizontalSlide.getCurrentPosition());
     }
     
     public int getFRMotorCount() {
