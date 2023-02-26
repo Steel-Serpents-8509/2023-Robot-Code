@@ -182,7 +182,7 @@ public class TestTeleop extends OpMode {
         if (first) {
             caiden.updateElevatorTargetPosition(0);
         } else if (second){
-            caiden.goToShortElevatorPosition();
+            caiden.goToLowElevatorPosition();
         } else if (third){
             caiden.goToMediumElevatorPosition();
         } else if (fourth){

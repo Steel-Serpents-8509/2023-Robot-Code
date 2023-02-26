@@ -26,13 +26,21 @@ public class AutoStages {
     public static final AutoSequencer<RobotAutoState> sequencer = new AutoSequencer<>(state);
 
     public static final Consumer<RobotAutoState> actionRightRangeSensor = autoState -> {
-        autoState.power = Range.clip(RobotAutoState.rangeSensorController.calculate(autoState.caiden.getDistance(), autoState.distanceToWall), -0.7, 0.7);
+        double measuredDistance = autoState.caiden.getDistance();
+        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
+        autoState.telemetry.addData("Measured Distance", measuredDistance);
+        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
+        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
+
+        autoState.power = Range.clip(RobotAutoState.rangeSensorController.calculate(measuredDistance), -0.7, 0.7);
+        autoState.telemetry.addData("At Goal", RobotAutoState.rangeSensorController.atGoal());
+        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
         autoState.caiden.driveRawPower(autoState.power + autoState.pivot,
                 -autoState.power - autoState.pivot,
                 -autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
-        autoState.caiden.goToShortElevatorPosition();
+        autoState.caiden.goToLowElevatorPosition();
         autoState.caiden.lazyL();
         autoState.caiden.closeClaw();
     };
@@ -41,7 +49,9 @@ public class AutoStages {
     public static final Stage<RobotAutoState> goRightToWall = new Stage<>("Go to right wall with distance sensor", actionRightRangeSensor)
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
-                autoState.distanceToWall = 19;
+                autoState.distanceToWall = RobotProperties.getDoubleValue("autoDistanceToWall", 17.0);
+                RobotAutoState.rangeSensorController.reset(autoState.caiden.getDistance());
+                RobotAutoState.rangeSensorController.setGoal(autoState.distanceToWall);
             })
             .setFinishAction(resetDrivetrain)
             .setIsEndPredicate(rangeControllerIsEndPredicate);
@@ -55,7 +65,7 @@ public class AutoStages {
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.goToElevatorPosition(915);
+        autoState.caiden.goToLowElevatorPosition();
         autoState.caiden.lazyL();
         autoState.caiden.closeClaw();
     };
@@ -306,11 +316,10 @@ public class AutoStages {
         if (!recognizedObjects.isEmpty()) {
             autoState.recognizedSignal = recognizedObjects.stream().max(Comparator.comparingDouble(Recognition::getConfidence)).get().getLabel();
         }
-    }).setStartAction(autoState -> {
-        autoState.caiden.setHeadlightPower(0.06);
-    }).setFinishAction(autoState -> {
-        autoState.caiden.setHeadlightPower(0.0);
-    }).setIsEndPredicate(recognizeSignalIsEndPredicate);
+    })
+            .setStartAction(autoState -> autoState.caiden.setHeadlightPower(0.06))
+            .setFinishAction(autoState -> autoState.caiden.setHeadlightPower(0.0))
+            .setIsEndPredicate(recognizeSignalIsEndPredicate);
 
 
     public static final Stage<RobotAutoState> goToZone = new Stage<RobotAutoState>("Go to zone", autoState -> {

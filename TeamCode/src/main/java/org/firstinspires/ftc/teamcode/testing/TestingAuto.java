@@ -31,8 +31,8 @@ public class TestingAuto extends LinearOpMode {
         
         caiden = new CaidenRobot(hardwareMap);
 
-        ButtonDebounce debounce = new ButtonDebounce();
-        AutoStages.sequencer.enableStageDebugging(() -> debounce.getButton(gamepad1.a));
+        //ButtonDebounce debounce = new ButtonDebounce();
+        //AutoStages.sequencer.enableStageDebugging(() -> debounce.getButton(gamepad1.a));
 
         AutoStages.state.caiden = caiden;
         AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
@@ -43,7 +43,7 @@ public class TestingAuto extends LinearOpMode {
         RobotAutoState.forwardController.setTolerance(30);
         RobotAutoState.strafeController.setTolerance(40);
         RobotAutoState.anglePID.setTolerance(2);
-        RobotAutoState.rangeSensorController.setTolerance(2.2);
+        RobotAutoState.rangeSensorController.setTolerance(1.6);
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Starting Auto Stage", AutoStages.sequencer.getCurrentStageName());
         telemetry.update();
@@ -59,6 +59,7 @@ public class TestingAuto extends LinearOpMode {
             AutoStages.sequencer.run();
             updateTelemetry();
         }
+        caiden.stop();
     }
     
     private void updateTelemetry() {
