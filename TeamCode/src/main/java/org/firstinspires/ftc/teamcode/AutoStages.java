@@ -41,7 +41,7 @@ public class AutoStages {
                 -autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
         autoState.caiden.goToLowElevatorPosition();
-        autoState.caiden.lazyL();
+        autoState.caiden.lazyS();
         autoState.caiden.closeClaw();
     };
 
@@ -85,7 +85,7 @@ public class AutoStages {
                 autoState.power - autoState.pivot);
 
         autoState.caiden.goToLowElevatorPosition();
-        autoState.caiden.lazyL();
+        autoState.caiden.lazyS();
         autoState.caiden.closeClaw();
     })
             .setStartAction(autoState -> autoState.distance = 1700)
@@ -159,16 +159,29 @@ public class AutoStages {
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.goToElevatorPosition(915);
-        autoState.caiden.lazyL();
+        autoState.caiden.goToLowElevatorPosition();
+        autoState.caiden.closeClaw();
+    };
+    public static final Consumer<RobotAutoState> actionStrafeToBigPoleWithStartingCone = autoState -> {
+        autoState.power = Range.clip(RobotAutoState.strafeController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.5, 0.5);
+        autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
+        autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
+                -autoState.power - autoState.pivot,
+                -autoState.power + autoState.pivot,
+                autoState.power - autoState.pivot);
+
+        autoState.caiden.goToLowElevatorPosition();
+        autoState.caiden.lazyS();
         autoState.caiden.closeClaw();
     };
 
-    public static final Stage<RobotAutoState> backupToShortPoleWithStartingCone = new Stage<>("Backup to short pole with starting cone", actionBackupToShortPole)
+    public static final Stage<RobotAutoState> strafeToBigPole = new Stage<>("Strafe to big pole with starting cone", actionStrafeToBigPoleWithStartingCone)
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
-                autoState.distance = -500;
-            }).setIsEndPredicate(forwardControllerIsEndPredicate);
+                autoState.caiden.lazyS();
+                autoState.distance = 1650;
+                autoState.caiden.goToHighElevatorPosition();
+            }).setIsEndPredicate(strafeControllerIsEndPredicate);
 
     public static final Stage<RobotAutoState> backupToShortPole = new Stage<>("Backup to short pole", actionBackupToShortPole)
             .setStartAction(autoState -> {
@@ -178,7 +191,7 @@ public class AutoStages {
 
     public static final Consumer<RobotAutoState> actionLowerConeOntoPole = autoState -> {
         if (autoState.stageElapsedTime.milliseconds() > 300) {
-            autoState.caiden.goToElevatorPosition(300);
+            autoState.caiden.goToElevatorPosition(900);
         }
         autoState.power = Range.clip(RobotAutoState.forwardController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.6, 0.6);
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
@@ -187,7 +200,7 @@ public class AutoStages {
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.lazyL();
+        autoState.caiden.lazyS();
         autoState.caiden.closeClaw();
     };
 
@@ -205,8 +218,8 @@ public class AutoStages {
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.goToElevatorPosition(300);
-        autoState.caiden.lazyL();
+        autoState.caiden.goToElevatorPosition(900);
+        autoState.caiden.lazyS();
         autoState.caiden.openClaw();
     };
 
@@ -224,7 +237,7 @@ public class AutoStages {
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.goToElevatorPosition(915);
+        autoState.caiden.goToLowElevatorPosition();
         autoState.caiden.lazyR();
         autoState.caiden.openClaw();
     }).setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 700);
@@ -257,6 +270,7 @@ public class AutoStages {
 
     public static final Stage<RobotAutoState> closeClawOnPreloadCone = new Stage<RobotAutoState>("Close claw on preloaded cone", autoState -> {
         autoState.caiden.closeClaw();
+        autoState.caiden.changeP(0.01);
         if (autoState.stageElapsedTime.milliseconds() > 1000) {
             autoState.caiden.goToLowElevatorPosition();
         }
@@ -278,7 +292,7 @@ public class AutoStages {
                 autoState.power - autoState.pivot);
 
         autoState.caiden.goToLowElevatorPosition();
-        autoState.caiden.lazyL();
+        autoState.caiden.lazyS();
         autoState.caiden.closeClaw();
 
     }).setStartAction(elapsed -> state.power = 0.2).setIsEndPredicate(robotStateIsEndPredicate);
@@ -287,10 +301,8 @@ public class AutoStages {
     // Should have 1-2 second timeout
     public static final Stage<RobotAutoState> recognizeSignalWithTimeout = new Stage<RobotAutoState>("Recognize signal with timeout", autoState -> {
 
-        if (autoState.caiden.Slidey.getCurrentPosition() > 120) {
-            autoState.caiden.lazyL();
-        }
-        autoState.caiden.goToElevatorPosition(915);
+
+        autoState.caiden.goToLowElevatorPosition();
         autoState.caiden.closeClaw();
 
         //TODO: Figure out if this delay is really needed

@@ -35,7 +35,6 @@ public class ConePlaceAuto extends LinearOpMode {
         AutoStages.state.caiden = caiden;
         AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
         AutoStages.state.telemetry = telemetry;
-        
         AutoStages.sequencer.setDoNothingStage(new Stage<>("caiden.stop()", state -> caiden.stop()));
 
 
@@ -44,7 +43,7 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.goRightToWall)
         .nextStage(AutoStages.goForwardToConeStackWithStartingCone)
         .nextStage(AutoStages.findConeLinePosition)
-        .nextStage(AutoStages.backupToShortPoleWithStartingCone)
+        .nextStage(AutoStages.strafeToBigPole)
         .nextStage(AutoStages.lowerStartingConeOntoPole)
         .nextStage(AutoStages.openClawWithStartingCone)
         .nextStage(AutoStages.goBackToConeStack);
@@ -98,6 +97,8 @@ public class ConePlaceAuto extends LinearOpMode {
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         caiden.setHeadlightPower(0.06);
+        caiden.changeP(0.002);
+        caiden.changeI(0.00045);
         waitForStart();
         caiden.closeClaw();
 

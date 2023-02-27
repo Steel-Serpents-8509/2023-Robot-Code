@@ -224,6 +224,8 @@ public class TestTeleop extends OpMode {
         anglePID = new PIDController(0.019, 0.01, 0.000);
         PhotonCore.enable();
         caiden.openClaw();
+        caiden.changeP(0.02);
+        caiden.changeI(0.0028);
     }
 
     private void sendTelemetry() {

@@ -52,6 +52,11 @@ public class TestingAuto extends LinearOpMode {
         waitForStart();
         caiden.closeClaw();
 
+        /*AutoStages.goRightToWall.nextStage(AutoStages.approachConeStack)
+                .nextStage(AutoStages.backupToShortPole);*/
+
+
+
         AutoStages.sequencer.start(AutoStages.goRightToWall);
 
         // run until the end of the match (driver presses STOP)

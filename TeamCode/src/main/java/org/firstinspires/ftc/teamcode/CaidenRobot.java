@@ -65,7 +65,12 @@ public class CaidenRobot {
     
     public DcMotorEx Slidey;
     private DcMotorEx Slidey2;
-    PIDController elevatorController = new PIDController(0.02, 0.0028, 0.0000);
+
+    double P = 0.02;
+    double I = 0.0028;
+
+    PIDController elevatorController = new PIDController(P, I, 0.0000);
+
     DistanceSensor distanceSensor;
     DistanceSensor revDistanceSensor;
     boolean stopElevator = true;
@@ -216,6 +221,13 @@ public class CaidenRobot {
         Slidey2.setPower(lastElevatorPower);
 
     }
+    public void changeP(double p2){
+        P = p2;
+    }
+    public void changeI(double i2){
+        I = i2;
+    }
+
 
     public void horizontalSlideOut() {
         HorizontalSlide.setPower(1);
