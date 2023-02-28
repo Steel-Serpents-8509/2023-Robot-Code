@@ -47,6 +47,7 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.raiseConeToPole)
         .nextStage(AutoStages.lowerStartingConeOntoPole)
         .nextStage(AutoStages.openClawWithStartingCone)
+        .nextStage(AutoStages.strafeHalfBack)
         .nextStage(AutoStages.goBackToConeStack)
 
 
@@ -55,6 +56,7 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.raiseConeToPole)
         .nextStage(AutoStages.lowerStartingConeOntoPole)
         .nextStage(AutoStages.openClawWithStartingCone)
+        .nextStage(AutoStages.strafeHalfBack)
         .nextStage(AutoStages.goBackToConeStack);
 
 

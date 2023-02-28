@@ -152,7 +152,7 @@ public class AutoStages {
                 autoState.caiden.resetDrivetrain();
 
             })
-            .setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 5000);
+            .setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 1000);
 
     public static final Stage<RobotAutoState> liftElevatorToClearConeStack = new Stage<RobotAutoState>("Lift elevator to clear cone stack", autoState -> {
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
@@ -193,6 +193,20 @@ public class AutoStages {
         autoState.caiden.closeClaw();
     };
 
+    public static final Consumer<RobotAutoState> actionStrafeHalfBack = autoState -> {
+        autoState.power = Range.clip(RobotAutoState.strafeController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.5, 0.5);
+        autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
+        autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
+                -autoState.power - autoState.pivot,
+                -autoState.power + autoState.pivot,
+                autoState.power - autoState.pivot);
+
+        autoState.caiden.horizontalSlideIn();
+        autoState.caiden.goToLowElevatorPosition();
+        autoState.caiden.lazyR();
+        autoState.caiden.openClaw();
+    };
+
     public static final Consumer<RobotAutoState> actionRaiseToBigPole = autoState -> {
         autoState.power = Range.clip(RobotAutoState.strafeController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.5, 0.5);
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
@@ -207,12 +221,24 @@ public class AutoStages {
         autoState.caiden.closeClaw();
     };
     public static final Stage<RobotAutoState> strafeToBigPole = new Stage<>("Strafe to big pole with starting cone", actionStrafeToBigPoleWithStartingCone)
+
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
                 autoState.caiden.lazyS();
-                autoState.distance = 1680;
-            }).setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 7000);
+                autoState.distance = 1673;
+            })
 
+            .setIsEndPredicate(strafeControllerIsEndPredicate);
+
+    public static final Stage<RobotAutoState> strafeHalfBack = new Stage<>("Strafe to big pole with starting cone", actionStrafeHalfBack)
+
+            .setStartAction(autoState -> {
+                autoState.caiden.resetDrivetrain();
+
+                autoState.distance = -400;
+            })
+
+            .setIsEndPredicate(strafeControllerIsEndPredicate);
     public static final Stage<RobotAutoState> strafeToPoleFromStack = new Stage<>("Strafe to big Pole", actionStrafeToBigPoleWithStartingCone)
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
@@ -238,10 +264,10 @@ public class AutoStages {
     };
 
     public static final Stage<RobotAutoState> lowerStartingConeOntoPole = new Stage<>("Lower starting cone onto pole", actionLowerConeOntoPole)
-            .setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 5000);
+            .setIsEndPredicate(elevatorIsEndPredicate);
 
     public static final Stage<RobotAutoState> raiseConeToPole = new Stage<>("Lower starting cone onto pole", actionRaiseToBigPole)
-            .setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 5000);
+            .setIsEndPredicate(elevatorIsEndPredicate);
 
     public static final Stage<RobotAutoState> lowerConeOntoPole = new Stage<>("Lower cone onto pole", actionLowerConeOntoPole)
             .setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 600);
@@ -259,8 +285,10 @@ public class AutoStages {
         autoState.caiden.openClaw();
     };
 
+
+
     public static final Stage<RobotAutoState> openClawWithStartingCone = new Stage<>("Open claw with starting cone", actionOpenClaw)
-            .setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 1000);
+            .setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 500);
 
     public static final Stage<RobotAutoState> openClaw = new Stage<>("Open claw to drop cone", actionOpenClaw)
             .setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 400);
@@ -320,14 +348,14 @@ public class AutoStages {
         if (autoState.stageElapsedTime.milliseconds() > 1000) {
             autoState.caiden.goToLowElevatorPosition();
         }
-    }).setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 1400);
+    }).setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 1000);
 
 
     public static final Stage<RobotAutoState> findConeLinePosition = new Stage<RobotAutoState>("Fine cone line position", autoState -> {
         if (seeingConeLine() && !autoState.seenConeLine) {
             autoState.seenConeLine = true;
         } else if (autoState.seenConeLine && !seeingConeLine()) {
-            autoState.distance = autoState.caiden.getFRMotorCount() + 80;
+            autoState.distance = autoState.caiden.getFRMotorCount() + 75;
             autoState.shouldEnd = true;
         }
 
@@ -351,10 +379,7 @@ public class AutoStages {
         autoState.caiden.goToLowElevatorPosition();
         autoState.caiden.closeClaw();
 
-        //TODO: Figure out if this delay is really needed
-        if (autoState.stageElapsedTime.milliseconds() < 300) {
-            return;
-        }
+
 
         List<Recognition> recognizedObjects = autoState.vision.lookForObject();
 

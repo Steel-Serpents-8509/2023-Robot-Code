@@ -50,5 +50,10 @@ public class EndPredicates {
         }
         return false;
     };
-
+    public static final Predicate<RobotAutoState> elevatorIsEndPredicate = autoState -> {
+        if(autoState.caiden.elevatorIsInPosition()) {
+            return true;
+        }
+        return false;
+    };
 }

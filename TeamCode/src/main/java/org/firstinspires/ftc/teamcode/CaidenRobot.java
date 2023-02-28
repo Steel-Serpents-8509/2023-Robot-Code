@@ -342,7 +342,7 @@ public class CaidenRobot {
 
     public boolean elevatorIsInPosition() {
         double elevatorPosition = Slidey.getCurrentPosition();
-        final int ELEVATOR_TOLERANCE = 90;
+        final int ELEVATOR_TOLERANCE = 20;
         return elevatorPosition > (targetElevatorPosition - ELEVATOR_TOLERANCE) &&
                 elevatorPosition < (targetElevatorPosition + ELEVATOR_TOLERANCE);
     }
