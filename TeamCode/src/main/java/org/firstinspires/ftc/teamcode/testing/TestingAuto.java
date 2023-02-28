@@ -57,7 +57,7 @@ public class TestingAuto extends LinearOpMode {
 
 
 
-        AutoStages.sequencer.start(AutoStages.goRightToWall);
+        AutoStages.sequencer.start(AutoStages.goBackToConeStack);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {

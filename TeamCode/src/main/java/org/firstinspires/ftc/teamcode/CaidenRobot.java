@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import com.outoftheboxrobotics.photoncore.Neutrino.Rev2MSensor.Rev2mDistanceSensorEx;
+import com.outoftheboxrobotics.photoncore.Neutrino.RevColorSensor.RevColorSensorV3Ex;
 import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -85,7 +86,7 @@ public class CaidenRobot {
     double driveSpeedMultiplier = 1;
 
     private static final int SHORT_ELEVATOR_HEIGHT = 465;
-    private static final int MEDIUM_ELEVATOR_HEIGHT = 790;
+    private static final int MEDIUM_ELEVATOR_HEIGHT = 777;
     private static final int HIGH_ELEVATOR_HEIGHT = 1060;
 
     private int targetElevatorPosition = 0;
@@ -135,10 +136,10 @@ public class CaidenRobot {
 
         HorizontalSlide = hardwareMap.get(DcMotorEx.class, "horiz_Slide");
         distr = hardwareMap.get(Rev2mDistanceSensorEx.class, "distr");
-        colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
+        colorSensor = hardwareMap.get(RevColorSensorV3Ex.class, "colorSensor");
         headlight = hardwareMap.get(ServoImplEx.class, "headlight");
         headlight.setPwmRange(pwmRange);
-
+        getDistance();
         BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -257,7 +258,9 @@ public class CaidenRobot {
         Slidey.setPower(power);
         Slidey2.setPower(power);
     }
-
+    public int getElevatorHeight(){
+        return lastElevatorPosition;
+    }
     public void poorPID() {
         power(.4);
         Slidey.setMode(RunMode.RUN_TO_POSITION);
@@ -345,7 +348,7 @@ public class CaidenRobot {
     }
     
     public void driveRawPower(double frontRightPower, double frontLeftPower, double backRightPower, double backLeftPower) {
-        if(Slidey.getCurrentPosition() >= 600) {
+        if(Slidey.getCurrentPosition() >= 900) {
             driveSpeedMultiplier = 0.5;
         } else {
             driveSpeedMultiplier = 1;
@@ -482,7 +485,6 @@ public class CaidenRobot {
 //        telemetry.addData("BRcount", BRMotor.getCurrentPosition());
 //        //telemetry.addData("FRcount", FRMotor.getCurrentPosition());
 //        telemetry.addData("FRcount", FRMotor.getCurrentPosition());
-//        telemetry.addData("Elevator Position", Slidey.getCurrentPosition());
         telemetry.addData("Elevator power", lastElevatorPower);
         telemetry.addData("Last Elevator Position", lastElevatorPosition);
 //        //telemetry.addData("Turret", LazySohum.getCurrentPosition());

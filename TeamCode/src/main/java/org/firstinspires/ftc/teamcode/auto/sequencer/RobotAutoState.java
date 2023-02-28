@@ -46,15 +46,15 @@ public class RobotAutoState extends StageState {
     public  String recognizedSignal = "";
     
     //                          cone5,  cone4, etc
-    public int[] coneHeight = {190,  180, 140, 70,  35};
-    public int currentCone = 0;
+    public int[] coneHeight = {155, 115, 95, 53,  0};
+    public int currentCone = -1;
     public int maxCone = 2;
     
     public void reset() {
 
         vision = null;
         caiden = null;
-        currentCone = 0;
+        currentCone = -1;
         robotInPosition = false;
         shouldEnd = false;
         seenConeLine = false;

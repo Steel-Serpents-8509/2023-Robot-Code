@@ -44,30 +44,29 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.goForwardToConeStackWithStartingCone)
         .nextStage(AutoStages.findConeLinePosition)
         .nextStage(AutoStages.strafeToBigPole)
+        .nextStage(AutoStages.raiseConeToPole)
+        .nextStage(AutoStages.lowerStartingConeOntoPole)
+        .nextStage(AutoStages.openClawWithStartingCone)
+        .nextStage(AutoStages.goBackToConeStack)
+
+
+        .nextStage(AutoStages.grabCone)
+        .nextStage(AutoStages.strafeToPoleFromStack)
+        .nextStage(AutoStages.raiseConeToPole)
         .nextStage(AutoStages.lowerStartingConeOntoPole)
         .nextStage(AutoStages.openClawWithStartingCone)
         .nextStage(AutoStages.goBackToConeStack);
-        
-        AutoStages.lineUpWithConeStack
-        .nextStage(AutoStages.approachConeStack)
-        .nextStage(AutoStages.grabCone)
-        .nextStage(AutoStages.liftElevatorToClearConeStack)
-        .nextStage(AutoStages.backupToShortPole)
-        .nextStage(AutoStages.lowerConeOntoPole)
-        .nextStage(AutoStages.openClaw)
-        .nextStage(AutoStages.clearLowGoal)
-        .nextStage(AutoStages.goBackToConeStack)
-        .nextStage(AutoStages.approachConeStack);
+
 
         AutoStages.goToZone1.nextStage(AutoStages.backupIntoZoneSlightly);
         AutoStages.goToZone2.nextStage(AutoStages.backupIntoZoneSlightly);
         AutoStages.goToZone3.nextStage(AutoStages.backupIntoZoneSlightly);
 
-        AutoStages.liftElevatorToClearConeStack.setNextStageFunction(state -> {
+        AutoStages.grabCone.setNextStageFunction(state -> {
             if(state.currentCone >= state.maxCone) {
                 return Optional.of(AutoStages.goToZone);
             } else {
-                return Optional.of(AutoStages.backupToShortPole);
+                return Optional.of(AutoStages.strafeToPoleFromStack);
             }
         });
 
@@ -117,10 +116,11 @@ public class ConePlaceAuto extends LinearOpMode {
         telemetry.addData("Power", AutoStages.state.power);
         telemetry.addData("Pivot", AutoStages.state.pivot);
         telemetry.addData("Recognized Signal", AutoStages.state.recognizedSignal);
-        telemetry.addData("Seeing Line", AutoStages.seeingConeLine());
-        telemetry.addData("Seen Line", AutoStages.state.seenConeLine);
+  //      telemetry.addData("Seeing Line", AutoStages.seeingConeLine());
+    //    telemetry.addData("Seen Line", AutoStages.state.seenConeLine);
         telemetry.addData("Current Cone", AutoStages.state.currentCone);
         telemetry.addData("Max Cone", AutoStages.state.maxCone);
+  //      telemetry.addData("elevator height", caiden.getElevatorHeight());
         caiden.updateTelemetry(telemetry);
         telemetry.addData("Loop Time", loopTime.milliseconds());
         loopTime.reset();
