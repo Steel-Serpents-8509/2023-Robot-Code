@@ -187,13 +187,10 @@ public class TestTeleop extends OpMode {
             caiden.goToMediumElevatorPosition();
         } else if (fourth){
             caiden.goToHighElevatorPosition();
-        }
-
-        //linear slide
-        if (raise){
-            caiden.driveElevator(0.3);
+        } else if (raise){
+            caiden.driveElevator(0.5);
         } else if (lower){
-            caiden.driveElevator(-0.1);
+            caiden.driveElevator(-0.01);
         } else {
             caiden.driveElevator(0);
         }
@@ -202,7 +199,7 @@ public class TestTeleop extends OpMode {
         if (open){
             caiden.openClaw();
         }
-        else if  (close){
+        else if (close){
             caiden.closeClaw();
         }
         if (test){

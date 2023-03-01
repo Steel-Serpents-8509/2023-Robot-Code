@@ -236,6 +236,14 @@ public class CaidenRobot {
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
     }
+
+    public void horizontalSlideOutKinda() {
+        HorizontalSlide.setPower(1);
+        HorizontalSlide.setTargetPosition(189);
+        HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
+
+    }
+
     public void horizontalSlideIn() {
         HorizontalSlide.setPower(-1);
         HorizontalSlide.setTargetPosition(0);

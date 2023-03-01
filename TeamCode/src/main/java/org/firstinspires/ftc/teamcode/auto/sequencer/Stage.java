@@ -106,4 +106,9 @@ public class Stage<T extends StageState> {
     public String getName() {
         return name;
     }
+
+    public void reset() {
+        started = false;
+    }
+
 }

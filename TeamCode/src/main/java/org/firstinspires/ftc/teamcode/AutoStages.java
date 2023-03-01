@@ -216,7 +216,7 @@ public class AutoStages {
                 autoState.power - autoState.pivot);
 
         autoState.caiden.goToHighElevatorPosition();
-        autoState.caiden.horizontalSlideOut();
+        autoState.caiden.horizontalSlideOutKinda();
         autoState.caiden.lazyS();
         autoState.caiden.closeClaw();
     };
@@ -248,7 +248,7 @@ public class AutoStages {
 
     public static final Consumer<RobotAutoState> actionLowerConeOntoPole = autoState -> {
         if (autoState.stageElapsedTime.milliseconds() > 400) {
-            autoState.caiden.horizontalSlideOut();
+            autoState.caiden.horizontalSlideOutKinda();
             autoState.caiden.goToElevatorPosition(1000);
 
         }

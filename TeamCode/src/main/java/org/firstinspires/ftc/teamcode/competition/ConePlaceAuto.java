@@ -29,7 +29,7 @@ public class ConePlaceAuto extends LinearOpMode {
         
         caiden = new CaidenRobot(hardwareMap);
 
-        ButtonDebounce debounce = new ButtonDebounce();
+        //ButtonDebounce debounce = new ButtonDebounce();
         //AutoStages.sequencer.enableStageDebugging(() -> debounce.getButton(gamepad1.a));
 
         AutoStages.state.caiden = caiden;

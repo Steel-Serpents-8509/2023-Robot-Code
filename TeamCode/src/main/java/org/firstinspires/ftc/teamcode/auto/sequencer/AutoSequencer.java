@@ -72,6 +72,7 @@ public class AutoSequencer<T extends StageState> {
             finishCurrentStage();
         }
         currentStage = stage;
+        currentStage.reset();
         sharedState.stageElapsedTime.reset();
     }
 

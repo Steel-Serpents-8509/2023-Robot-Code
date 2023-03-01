@@ -1,15 +1,19 @@
 package org.firstinspires.ftc.teamcode.testing;
 
+import static org.firstinspires.ftc.teamcode.auto.EndPredicates.rangeControllerIsEndPredicate;
+
 import android.annotation.SuppressLint;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.AutoStages;
 import org.firstinspires.ftc.teamcode.ButtonDebounce;
 import org.firstinspires.ftc.teamcode.CaidenRobot;
 import org.firstinspires.ftc.teamcode.CustomVision;
+import org.firstinspires.ftc.teamcode.RobotProperties;
 import org.firstinspires.ftc.teamcode.auto.sequencer.RobotAutoState;
 import org.firstinspires.ftc.teamcode.auto.sequencer.Stage;
 
@@ -57,7 +61,7 @@ public class TestingAuto extends LinearOpMode {
 
 
 
-        AutoStages.sequencer.start(AutoStages.goBackToConeStack);
+        AutoStages.sequencer.start(testStrafe);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -66,7 +70,26 @@ public class TestingAuto extends LinearOpMode {
         }
         caiden.stop();
     }
-    
+    public static final Stage<RobotAutoState> testStrafe = new Stage<RobotAutoState>("test strafe", autoState -> {
+
+        autoState.telemetry.addData("Goal", RobotAutoState.profiledStrafeController.getGoal().position);
+        autoState.telemetry.addData("pos", autoState.caiden.getFRMotorCount());
+        autoState.power = Range.clip(RobotAutoState.profiledStrafeController.calculate(autoState.caiden.getFRMotorCount()), -0.7, 0.7);
+
+        autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
+        autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
+                -autoState.power - autoState.pivot,
+                -autoState.power + autoState.pivot,
+                autoState.power - autoState.pivot);
+
+
+    })
+            .setStartAction(autoState -> {
+                autoState.caiden.resetDrivetrain();
+                RobotAutoState.profiledStrafeController.reset();
+                RobotAutoState.profiledStrafeController.setGoal(-2000);
+            });
+
     private void updateTelemetry() {
         telemetry.addData("Current Auto Stage Name", AutoStages.sequencer.getCurrentStageName());
         telemetry.addData("Auto Stage Time", AutoStages.sequencer.getTimeInStageMS());

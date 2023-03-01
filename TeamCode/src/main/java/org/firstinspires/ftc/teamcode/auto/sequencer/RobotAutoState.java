@@ -21,6 +21,8 @@ public class RobotAutoState extends StageState {
     public static final PIDController strafeController = new PIDController(0.01, 0.025, 0.0);
 
     public static ProfiledPIDController rangeSensorController;
+    public static ProfiledPIDController profiledForwardController;
+    public static ProfiledPIDController profiledStrafeController;
     public static final PIDController anglePID = new PIDController(0.027, 0.006, 0.002);
 
     public double power;
@@ -62,6 +64,14 @@ public class RobotAutoState extends StageState {
 
         PIDCoefficients rangeSensorPIDValues = RobotProperties.getPIDCoefficients("rangeSensorController", new PIDCoefficients(0.1, 0.0, 0.0));
         RobotAutoState.rangeSensorController = new ProfiledPIDController(rangeSensorPIDValues.p, rangeSensorPIDValues.i, rangeSensorPIDValues.d, new TrapezoidProfile.Constraints(RobotProperties.getDoubleValue("rangeSensorProfileVelocity", 0.8), RobotProperties.getDoubleValue("rangeSensorProfileAcceleration", 0.5)));
+        PIDCoefficients profiledStrafeControllerPIDValues = RobotProperties.getPIDCoefficients("profiledStrafeController", new PIDCoefficients(0.01, 0.0, 0.0));
+        RobotAutoState.profiledStrafeController = new ProfiledPIDController(profiledStrafeControllerPIDValues.p, profiledStrafeControllerPIDValues.i, profiledStrafeControllerPIDValues.d,
+                new TrapezoidProfile.Constraints(RobotProperties.getDoubleValue("strafeProfileVelocity", 500),
+                        RobotProperties.getDoubleValue("strafeProfileAcceleration", 500)));
+        PIDCoefficients profiledForwardControllerPIDValues = RobotProperties.getPIDCoefficients("profiledStrafeController", new PIDCoefficients(0.01, 0.0, 0.0));
+        RobotAutoState.profiledForwardController = new ProfiledPIDController(profiledForwardControllerPIDValues.p, profiledForwardControllerPIDValues.i, profiledForwardControllerPIDValues.d,
+                new TrapezoidProfile.Constraints(RobotProperties.getDoubleValue("forwardProfileVelocity", 1000),
+                        RobotProperties.getDoubleValue("forwardProfileAcceleration", 750)));
 
     }
     
