@@ -60,8 +60,10 @@ public class TestingAuto extends LinearOpMode {
                 .nextStage(AutoStages.backupToShortPole);*/
 
 
+        AutoStages.goBackToConeStackPart1
+                .nextStage(AutoStages.goBackToConeStackPart2);
 
-        AutoStages.sequencer.start(testStrafe);
+        AutoStages.sequencer.start(AutoStages.goBackToConeStackPart1);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {

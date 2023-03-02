@@ -33,6 +33,16 @@ public class EndPredicates {
         } else return RobotAutoState.strafeController.atSetPoint() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 400;
         return false;
     };
+
+    public static final Predicate<RobotAutoState> profiledStrafeControllerIsEndPredicate = autoState -> {
+        if(RobotAutoState.profiledStrafeController.atGoal() && !autoState.robotInPosition) {
+            autoState.stageElapsedTime.reset();
+            autoState.robotInPosition = true;
+        } else if(!RobotAutoState.profiledStrafeController.atGoal() && autoState.robotInPosition) {
+            autoState.robotInPosition = false;
+        } else return RobotAutoState.profiledStrafeController.atGoal() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 400;
+        return false;
+    };
     public static final Predicate<RobotAutoState> rangeControllerIsEndPredicate = autoState -> {
         if(RobotAutoState.rangeSensorController.atGoal() && RobotAutoState.anglePID.atSetPoint() && !autoState.robotInPosition) {
             autoState.stageElapsedTime.reset();

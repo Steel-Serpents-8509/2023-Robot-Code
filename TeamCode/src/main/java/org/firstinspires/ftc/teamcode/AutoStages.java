@@ -4,6 +4,10 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.auto.EndPredicates.*;
 import static org.firstinspires.ftc.teamcode.auto.SingleActions.*;
 
+import com.outoftheboxrobotics.photoncore.Neutrino.Rev2MSensor.Rev2mDistanceSensorEx;
+import com.outoftheboxrobotics.photoncore.Neutrino.RevColorSensor.RevColorSensorV3Ex;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
+
 import org.firstinspires.ftc.teamcode.auto.sequencer.AutoSequencer;
 import org.firstinspires.ftc.teamcode.auto.sequencer.RobotAutoState;
 import org.firstinspires.ftc.teamcode.auto.sequencer.Stage;
@@ -11,6 +15,7 @@ import org.firstinspires.ftc.teamcode.auto.sequencer.Stage;
 import java.util.Comparator;
 import java.util.function.*;
 
+import com.arcrobotics.ftclib.trajectory.TrapezoidProfile;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -305,13 +310,13 @@ public class AutoStages {
         autoState.caiden.openClaw();
     }).setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 700);
 
-    public static final Stage<RobotAutoState> goBackToConeStack = new Stage<RobotAutoState>("Go back to cone stack", autoState -> {
+    public static final Stage<RobotAutoState> goBackToConeStackPart1 = new Stage<RobotAutoState>("Go back to cone stack part 1", autoState -> {
         double measuredDistance = autoState.caiden.getDistance();
 //        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
 //        autoState.telemetry.addData("Measured Distance", measuredDistance);
 //        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
 //        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
-        autoState.power = Range.clip(RobotAutoState.rangeSensorController.calculate(measuredDistance), -0.7, 0.7);
+        autoState.power = Range.clip(RobotAutoState.profiledStrafeController.calculate(autoState.caiden.getFRMotorCount()), -0.7, 0.7);
 //        autoState.telemetry.addData("At Goal", RobotAutoState.rangeSensorController.atGoal());
 //        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
@@ -326,9 +331,40 @@ public class AutoStages {
         autoState.caiden.openClaw();
     })
             .setStartAction(autoState -> {
-                autoState.currentCone++;
+                autoState.caiden.resetDrivetrain();
+                autoState.currentCone = autoState.currentCone + 1 ;
                 autoState.distanceToWall = RobotProperties.getDoubleValue("autoDistanceToCones", 7.0);
-                RobotAutoState.rangeSensorController.reset(autoState.caiden.getDistance());
+                RobotAutoState.profiledStrafeController.reset(0);
+                RobotAutoState.profiledStrafeController.setGoal(-2000);
+            })
+            .setIsEndPredicate(robotAutoState -> robotAutoState.caiden.getFRMotorCount() < -1400);
+    public static final Stage<RobotAutoState> goBackToConeStackPart2 = new Stage<RobotAutoState>("Go back to cone stack part 2", autoState -> {
+        double measuredDistance = autoState.caiden.getDistance();
+        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
+        autoState.telemetry.addData("Measured Distance", measuredDistance);
+        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
+        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
+        autoState.power = Range.clip(RobotAutoState.rangeSensorController.calculate(measuredDistance), -0.7, 0.7);
+//        autoState.telemetry.addData("At Goal", RobotAutoState.rangeSensorController.atGoal());
+        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
+        autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
+        autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
+                -autoState.power - autoState.pivot,
+                -autoState.power + autoState.pivot,
+                autoState.power - autoState.pivot);
+
+        autoState.caiden.horizontalSlideIn();
+        autoState.caiden.goToElevatorPosition(autoState.coneHeight[autoState.currentCone]);
+        autoState.caiden.lazyR();
+        autoState.caiden.openClaw();
+    })
+            .setStartAction(autoState -> {
+                if(autoState.currentCone < 0) {
+                    autoState.currentCone = 0;
+                }
+                autoState.distanceToWall = RobotProperties.getDoubleValue("autoDistanceToCones", 7.0);
+                RobotAutoState.rangeSensorController.reset(new TrapezoidProfile.State(autoState.caiden.getDistance(),
+                        RobotProperties.getDoubleValue("BackToConeStackTransitionVelocity", 250)));
                 RobotAutoState.rangeSensorController.setGoal(autoState.distanceToWall);
             })
             .setIsEndPredicate(rangeControllerIsEndPredicate);
@@ -343,6 +379,7 @@ public class AutoStages {
 
     public static final Stage<RobotAutoState> closeClawOnPreloadCone = new Stage<RobotAutoState>("Close claw on preloaded cone", autoState -> {
         autoState.caiden.closeClaw();
+
         if (autoState.stageElapsedTime.milliseconds() > 1000) {
             autoState.caiden.goToLowElevatorPosition();
         }

@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.ButtonDebounce;
 import org.firstinspires.ftc.teamcode.CustomVision;
 import org.firstinspires.ftc.teamcode.CaidenRobot;
 import org.firstinspires.ftc.teamcode.AutoStages;
@@ -26,8 +25,9 @@ public class ConePlaceAuto extends LinearOpMode {
         
         AutoStages.sequencer.reset();
         AutoStages.state.reset();
-        
+
         caiden = new CaidenRobot(hardwareMap);
+        caiden.closeClaw();
 
         //ButtonDebounce debounce = new ButtonDebounce();
         //AutoStages.sequencer.enableStageDebugging(() -> debounce.getButton(gamepad1.a));
@@ -36,6 +36,7 @@ public class ConePlaceAuto extends LinearOpMode {
         AutoStages.state.vision = new CustomVision(hardwareMap, "/sdcard/FIRST/tflitemodels/best_shape_model.tflite");
         AutoStages.state.telemetry = telemetry;
         AutoStages.sequencer.setDoNothingStage(new Stage<>("caiden.stop()", state -> caiden.stop()));
+
 
 
         AutoStages.closeClawOnPreloadCone
@@ -48,7 +49,8 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.lowerStartingConeOntoPole)
         .nextStage(AutoStages.openClawWithStartingCone)
         .nextStage(AutoStages.strafeHalfBack)
-        .nextStage(AutoStages.goBackToConeStack)
+        .nextStage(AutoStages.goBackToConeStackPart1)
+        .nextStage(AutoStages.goBackToConeStackPart2)
 
 
         .nextStage(AutoStages.grabCone)
@@ -57,7 +59,7 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.lowerStartingConeOntoPole)
         .nextStage(AutoStages.openClawWithStartingCone)
         .nextStage(AutoStages.strafeHalfBack)
-        .nextStage(AutoStages.goBackToConeStack);
+        .nextStage(AutoStages.goBackToConeStackPart1);
 
 
         AutoStages.goToZone1.nextStage(AutoStages.backupIntoZoneSlightly);
@@ -92,7 +94,7 @@ public class ConePlaceAuto extends LinearOpMode {
         RobotAutoState.forwardController.setTolerance(30);
         RobotAutoState.strafeController.setTolerance(40);
         RobotAutoState.anglePID.setTolerance(2);
-        RobotAutoState.rangeSensorController.setTolerance(2.2);
+        RobotAutoState.rangeSensorController.setTolerance(2);
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Starting Auto Stage", AutoStages.sequencer.getCurrentStageName());
         telemetry.update();
