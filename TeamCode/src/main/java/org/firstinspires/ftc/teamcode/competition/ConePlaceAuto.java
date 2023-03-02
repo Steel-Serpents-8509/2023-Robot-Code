@@ -98,8 +98,6 @@ public class ConePlaceAuto extends LinearOpMode {
         telemetry.update();
         // Wait for the game to start (driver presses PLAY)
         caiden.setHeadlightPower(0.06);
-        caiden.changeP(0.002);
-        caiden.changeI(0.00045);
         waitForStart();
         caiden.closeClaw();
 
@@ -114,14 +112,14 @@ public class ConePlaceAuto extends LinearOpMode {
     
     private void updateTelemetry() {
         telemetry.addData("Current Auto Stage Name", AutoStages.sequencer.getCurrentStageName());
-        telemetry.addData("Auto Stage Time", AutoStages.sequencer.getTimeInStageMS());
-        telemetry.addData("Power", AutoStages.state.power);
-        telemetry.addData("Pivot", AutoStages.state.pivot);
-        telemetry.addData("Recognized Signal", AutoStages.state.recognizedSignal);
+//        telemetry.addData("Auto Stage Time", AutoStages.sequencer.getTimeInStageMS());
+//        telemetry.addData("Power", AutoStages.state.power);
+//        telemetry.addData("Pivot", AutoStages.state.pivot);
+//        telemetry.addData("Recognized Signal", AutoStages.state.recognizedSignal);
   //      telemetry.addData("Seeing Line", AutoStages.seeingConeLine());
     //    telemetry.addData("Seen Line", AutoStages.state.seenConeLine);
-        telemetry.addData("Current Cone", AutoStages.state.currentCone);
-        telemetry.addData("Max Cone", AutoStages.state.maxCone);
+//        telemetry.addData("Current Cone", AutoStages.state.currentCone);
+//        telemetry.addData("Max Cone", AutoStages.state.maxCone);
   //      telemetry.addData("elevator height", caiden.getElevatorHeight());
         caiden.updateTelemetry(telemetry);
         telemetry.addData("Loop Time", loopTime.milliseconds());

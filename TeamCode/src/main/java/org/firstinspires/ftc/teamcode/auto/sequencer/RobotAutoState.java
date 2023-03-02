@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.ProfiledPIDController;
 import com.arcrobotics.ftclib.trajectory.TrapezoidProfile;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -62,13 +63,23 @@ public class RobotAutoState extends StageState {
         seenConeLine = false;
         recognizedSignal = "";
 
-        PIDCoefficients rangeSensorPIDValues = RobotProperties.getPIDCoefficients("rangeSensorController", new PIDCoefficients(0.1, 0.0, 0.0));
-        RobotAutoState.rangeSensorController = new ProfiledPIDController(rangeSensorPIDValues.p, rangeSensorPIDValues.i, rangeSensorPIDValues.d, new TrapezoidProfile.Constraints(RobotProperties.getDoubleValue("rangeSensorProfileVelocity", 0.8), RobotProperties.getDoubleValue("rangeSensorProfileAcceleration", 0.5)));
-        PIDCoefficients profiledStrafeControllerPIDValues = RobotProperties.getPIDCoefficients("profiledStrafeController", new PIDCoefficients(0.01, 0.0, 0.0));
+        PIDFCoefficients rangeSensorPIDValues = RobotProperties.getPIDCoefficients("rangeSensorController", new PIDFCoefficients(0.1, 0.0, 0.0, 0.0));
+        RobotAutoState.rangeSensorController = new ProfiledPIDController(
+                rangeSensorPIDValues.p,
+                rangeSensorPIDValues.i,
+                rangeSensorPIDValues.d,
+                new TrapezoidProfile.Constraints(
+                        RobotProperties.getDoubleValue("rangeSensorProfileVelocity", 0.8),
+                        RobotProperties.getDoubleValue("rangeSensorProfileAcceleration", 0.5)
+                )
+        );
+
+        PIDFCoefficients profiledStrafeControllerPIDValues = RobotProperties.getPIDCoefficients("profiledStrafeController", new PIDFCoefficients(0.01, 0.0, 0.0, 0.0));
         RobotAutoState.profiledStrafeController = new ProfiledPIDController(profiledStrafeControllerPIDValues.p, profiledStrafeControllerPIDValues.i, profiledStrafeControllerPIDValues.d,
                 new TrapezoidProfile.Constraints(RobotProperties.getDoubleValue("strafeProfileVelocity", 500),
                         RobotProperties.getDoubleValue("strafeProfileAcceleration", 500)));
-        PIDCoefficients profiledForwardControllerPIDValues = RobotProperties.getPIDCoefficients("profiledStrafeController", new PIDCoefficients(0.01, 0.0, 0.0));
+
+        PIDFCoefficients profiledForwardControllerPIDValues = RobotProperties.getPIDCoefficients("profiledStrafeController", new PIDFCoefficients(0.01, 0.0, 0.0, 0.0));
         RobotAutoState.profiledForwardController = new ProfiledPIDController(profiledForwardControllerPIDValues.p, profiledForwardControllerPIDValues.i, profiledForwardControllerPIDValues.d,
                 new TrapezoidProfile.Constraints(RobotProperties.getDoubleValue("forwardProfileVelocity", 1000),
                         RobotProperties.getDoubleValue("forwardProfileAcceleration", 750)));

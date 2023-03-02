@@ -27,14 +27,14 @@ public class AutoStages {
 
     public static final Consumer<RobotAutoState> actionRightRangeSensor = autoState -> {
         double measuredDistance = autoState.caiden.getDistance();
-        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
-        autoState.telemetry.addData("Measured Distance", measuredDistance);
-        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
-        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
+//        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
+//        autoState.telemetry.addData("Measured Distance", measuredDistance);
+//        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
+//        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
 
         autoState.power = Range.clip(RobotAutoState.rangeSensorController.calculate(measuredDistance), -0.7, 0.7);
-        autoState.telemetry.addData("At Goal", RobotAutoState.rangeSensorController.atGoal());
-        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
+//        autoState.telemetry.addData("At Goal", RobotAutoState.rangeSensorController.atGoal());
+//        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
         autoState.caiden.driveRawPower(autoState.power + autoState.pivot,
                 -autoState.power - autoState.pivot,
@@ -225,20 +225,19 @@ public class AutoStages {
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
                 autoState.caiden.lazyS();
-                autoState.distance = 1673;
+                autoState.distance = 1685;
             })
 
             .setIsEndPredicate(strafeControllerIsEndPredicate);
 
-    public static final Stage<RobotAutoState> strafeHalfBack = new Stage<>("Strafe to big pole with starting cone", actionStrafeHalfBack)
+    public static final Stage<RobotAutoState> strafeHalfBack = new Stage<>("Strafing to cone stack w/o distance", actionStrafeHalfBack)
 
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
-
-                autoState.distance = -400;
+                autoState.distance = -800;
             })
 
-            .setIsEndPredicate(strafeControllerIsEndPredicate);
+            .setIsEndPredicate(robotAutoState -> RobotAutoState.strafeController.atSetPoint());
     public static final Stage<RobotAutoState> strafeToPoleFromStack = new Stage<>("Strafe to big Pole", actionStrafeToBigPoleWithStartingCone)
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
@@ -308,13 +307,13 @@ public class AutoStages {
 
     public static final Stage<RobotAutoState> goBackToConeStack = new Stage<RobotAutoState>("Go back to cone stack", autoState -> {
         double measuredDistance = autoState.caiden.getDistance();
-        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
-        autoState.telemetry.addData("Measured Distance", measuredDistance);
-        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
-        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
+//        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
+//        autoState.telemetry.addData("Measured Distance", measuredDistance);
+//        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
+//        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
         autoState.power = Range.clip(RobotAutoState.rangeSensorController.calculate(measuredDistance), -0.7, 0.7);
-        autoState.telemetry.addData("At Goal", RobotAutoState.rangeSensorController.atGoal());
-        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
+//        autoState.telemetry.addData("At Goal", RobotAutoState.rangeSensorController.atGoal());
+//        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
         autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
                 -autoState.power - autoState.pivot,
@@ -344,7 +343,6 @@ public class AutoStages {
 
     public static final Stage<RobotAutoState> closeClawOnPreloadCone = new Stage<RobotAutoState>("Close claw on preloaded cone", autoState -> {
         autoState.caiden.closeClaw();
-        autoState.caiden.changeP(0.01);
         if (autoState.stageElapsedTime.milliseconds() > 1000) {
             autoState.caiden.goToLowElevatorPosition();
         }
@@ -355,7 +353,7 @@ public class AutoStages {
         if (seeingConeLine() && !autoState.seenConeLine) {
             autoState.seenConeLine = true;
         } else if (autoState.seenConeLine && !seeingConeLine()) {
-            autoState.distance = autoState.caiden.getFRMotorCount() + 75;
+            autoState.distance = autoState.caiden.getFRMotorCount() + 63;
             autoState.shouldEnd = true;
         }
 

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.sun.tools.javac.tree.Pretty;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -86,10 +87,11 @@ public class RobotProperties {
         return getDouble(VALUE_PREFIX + doubleName, defaultValue);
     }
 
-    public static PIDCoefficients getPIDCoefficients(@NonNull String pidName, @NonNull PIDCoefficients defaultValues) {
-        return new PIDCoefficients(getDouble(PID_PREFIX + pidName + ".p", defaultValues.p),
+    public static PIDFCoefficients getPIDCoefficients(@NonNull String pidName, @NonNull PIDFCoefficients defaultValues) {
+        return new PIDFCoefficients(getDouble(PID_PREFIX + pidName + ".p", defaultValues.p),
                 getDouble(PID_PREFIX + pidName + ".i", defaultValues.i),
-                getDouble(PID_PREFIX + pidName +  ".d", defaultValues.d)
+                getDouble(PID_PREFIX + pidName +  ".d", defaultValues.d),
+                getDouble(PID_PREFIX + pidName + ".f", defaultValues.f)
         );
     }
 

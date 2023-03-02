@@ -6,6 +6,7 @@ import com.outoftheboxrobotics.photoncore.Neutrino.Rev2MSensor.Rev2mDistanceSens
 import com.outoftheboxrobotics.photoncore.Neutrino.RevColorSensor.RevColorSensorV3Ex;
 import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -67,10 +68,8 @@ public class CaidenRobot {
     public DcMotorEx Slidey;
     private DcMotorEx Slidey2;
 
-    double P = 0.02;
-    double I = 0.0028;
-
-    PIDController elevatorController = new PIDController(P, I, 0.0000);
+    private final PIDFCoefficients elevatorPIDFCoefficients;
+    private final PIDFController elevatorController;
 
     DistanceSensor distanceSensor;
     DistanceSensor revDistanceSensor;
@@ -164,6 +163,13 @@ public class CaidenRobot {
         Slidey2.setMode(RunMode.RUN_WITHOUT_ENCODER);
 
         HorizontalSlide.setMode(RunMode.RUN_WITHOUT_ENCODER);
+        elevatorPIDFCoefficients = RobotProperties.getPIDCoefficients("elevator", new PIDFCoefficients(0.02, 0.0, 0.0, 0.3));
+        elevatorController = new PIDFController(
+                elevatorPIDFCoefficients.p,
+                elevatorPIDFCoefficients.i,
+                elevatorPIDFCoefficients.d,
+                elevatorPIDFCoefficients.f
+        );
     }
 
     public void stop() {
@@ -189,13 +195,15 @@ public class CaidenRobot {
     public double getDistance() {
         return distr.getDistance(DistanceUnit.CM);
     }
-    
+
+    final double OPEN_CLAW_VALUE = RobotProperties.getDoubleValue("open_claw_value", 0.8);
+    final double CLOSE_CLAW_VALUE = RobotProperties.getDoubleValue("close_claw_value" , 0.0);
     public void openClaw() {
-        Claw.setPosition(0.7);
+        Claw.setPosition(OPEN_CLAW_VALUE);
     }
     
     public void closeClaw() {
-        Claw.setPosition(0.0);
+        Claw.setPosition(CLOSE_CLAW_VALUE);
     }
     
     public void driveElevator(double power) {
@@ -222,12 +230,6 @@ public class CaidenRobot {
         Slidey2.setPower(lastElevatorPower);
 
     }
-    public void changeP(double p2){
-        P = p2;
-    }
-    public void changeI(double i2){
-        I = i2;
-    }
 
 
     public void horizontalSlideOut() {
@@ -239,7 +241,7 @@ public class CaidenRobot {
 
     public void horizontalSlideOutKinda() {
         HorizontalSlide.setPower(1);
-        HorizontalSlide.setTargetPosition(189);
+        HorizontalSlide.setTargetPosition(210);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
     }
@@ -350,7 +352,7 @@ public class CaidenRobot {
 
     public boolean elevatorIsInPosition() {
         double elevatorPosition = Slidey.getCurrentPosition();
-        final int ELEVATOR_TOLERANCE = 20;
+        final int ELEVATOR_TOLERANCE = 30;
         return elevatorPosition > (targetElevatorPosition - ELEVATOR_TOLERANCE) &&
                 elevatorPosition < (targetElevatorPosition + ELEVATOR_TOLERANCE);
     }
@@ -493,11 +495,12 @@ public class CaidenRobot {
 //        telemetry.addData("BRcount", BRMotor.getCurrentPosition());
 //        //telemetry.addData("FRcount", FRMotor.getCurrentPosition());
 //        telemetry.addData("FRcount", FRMotor.getCurrentPosition());
-        telemetry.addData("Elevator power", lastElevatorPower);
-        telemetry.addData("Last Elevator Position", lastElevatorPosition);
+//        telemetry.addData("Elevator power", lastElevatorPower);
+//        telemetry.addData("Last Elevator Position", lastElevatorPosition);
 //        //telemetry.addData("Turret", LazySohum.getCurrentPosition());
 //        //telemetry.addData("Magnet", Magnet.getValue());
-        telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
+//        telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
+        getRawHeading();
 //        telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
 //        //telemetry.addData("arm desired pos", armPosition);
 //        //telemetry.addData("Red", colorSensor.red());

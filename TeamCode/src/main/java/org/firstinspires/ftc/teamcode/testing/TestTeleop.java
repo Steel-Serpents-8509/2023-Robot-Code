@@ -121,10 +121,9 @@ public class TestTeleop extends OpMode {
 
         if (gamepad2.b){
             caiden.lazyL();
-            caiden.horizontalSlideOut();
+
         } else if (gamepad2.x){
             caiden.lazyR();
-            caiden.horizontalSlideOut();
         } else if (gamepad2.a){
             caiden.lazyS();
             caiden.horizontalSlideIn();
@@ -181,16 +180,20 @@ public class TestTeleop extends OpMode {
 
         if (first) {
             caiden.updateElevatorTargetPosition(0);
+            caiden.horizontalSlideIn();
         } else if (second){
             caiden.goToLowElevatorPosition();
+            caiden.horizontalSlideOut();
         } else if (third){
             caiden.goToMediumElevatorPosition();
+            caiden.horizontalSlideOut();
         } else if (fourth){
             caiden.goToHighElevatorPosition();
+            caiden.horizontalSlideOut();
         } else if (raise){
-            caiden.driveElevator(0.5);
+            caiden.driveElevator(0.7);
         } else if (lower){
-            caiden.driveElevator(-0.01);
+            caiden.driveElevator(-0.0001);
         } else {
             caiden.driveElevator(0);
         }
@@ -221,8 +224,6 @@ public class TestTeleop extends OpMode {
         anglePID = new PIDController(0.019, 0.01, 0.000);
         PhotonCore.enable();
         caiden.openClaw();
-        caiden.changeP(0.02);
-        caiden.changeI(0.0028);
     }
 
     private void sendTelemetry() {
