@@ -239,7 +239,7 @@ public class CaidenRobot {
 
     public void horizontalSlideOutKinda() {
         HorizontalSlide.setPower(.75);
-        HorizontalSlide.setTargetPosition(232);
+        HorizontalSlide.setTargetPosition(245);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
     }
@@ -361,7 +361,7 @@ public class CaidenRobot {
 
     public boolean elevatorIsInPosition() {
         double elevatorPosition = Slidey.getCurrentPosition();
-        final int ELEVATOR_TOLERANCE = 30;
+        final int ELEVATOR_TOLERANCE = 36;
         return elevatorPosition > (targetElevatorPosition - ELEVATOR_TOLERANCE) &&
                 elevatorPosition < (targetElevatorPosition + ELEVATOR_TOLERANCE);
     }

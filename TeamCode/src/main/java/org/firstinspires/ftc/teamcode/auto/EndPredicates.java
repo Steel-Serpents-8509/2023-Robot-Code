@@ -21,7 +21,7 @@ public class EndPredicates {
             autoState.robotInPosition = true;
         } else if(!RobotAutoState.forwardController.atSetPoint() && autoState.robotInPosition) {
             autoState.robotInPosition = false;
-        } else return RobotAutoState.forwardController.atSetPoint() && autoState.robotInPosition && autoState.elapsedTimeInPosition.milliseconds() > 400;
+        } else return RobotAutoState.forwardController.atSetPoint() && autoState.robotInPosition && autoState.elapsedTimeInPosition.milliseconds() > 100;
         return false;
     };
     public static final Predicate<RobotAutoState> strafeControllerIsEndPredicate = autoState -> {
@@ -40,7 +40,7 @@ public class EndPredicates {
             autoState.robotInPosition = true;
         } else if(!RobotAutoState.profiledStrafeController.atGoal() && autoState.robotInPosition) {
             autoState.robotInPosition = false;
-        } else return RobotAutoState.profiledStrafeController.atGoal() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 400;
+        } else return RobotAutoState.profiledStrafeController.atGoal() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 100;
         return false;
     };
     public static final Predicate<RobotAutoState> rangeControllerIsEndPredicate = autoState -> {
@@ -49,7 +49,7 @@ public class EndPredicates {
             autoState.robotInPosition = true;
         } else if(!RobotAutoState.rangeSensorController.atGoal() && autoState.robotInPosition) {
             autoState.robotInPosition = false;
-        } else return RobotAutoState.rangeSensorController.atGoal() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 400;
+        } else return RobotAutoState.rangeSensorController.atGoal() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 100;
         return false;
     };
 
