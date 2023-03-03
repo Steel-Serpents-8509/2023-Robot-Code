@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.teamcode.CustomVision;
 import org.firstinspires.ftc.teamcode.CaidenRobot;
 import org.firstinspires.ftc.teamcode.AutoStages;
@@ -94,8 +95,10 @@ public class ConePlaceAuto extends LinearOpMode {
         
         RobotAutoState.forwardController.setTolerance(30);
         RobotAutoState.strafeController.setTolerance(40);
+        RobotAutoState.profiledStrafeController.setTolerance(29);
+
         RobotAutoState.anglePID.setTolerance(2);
-        RobotAutoState.rangeSensorController.setTolerance(2);
+        RobotAutoState.rangeSensorController.setTolerance(1.6);
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Starting Auto Stage", AutoStages.sequencer.getCurrentStageName());
         telemetry.update();
@@ -111,6 +114,7 @@ public class ConePlaceAuto extends LinearOpMode {
             AutoStages.sequencer.run();
             updateTelemetry();
         }
+        caiden.stop();
     }
     
     private void updateTelemetry() {
