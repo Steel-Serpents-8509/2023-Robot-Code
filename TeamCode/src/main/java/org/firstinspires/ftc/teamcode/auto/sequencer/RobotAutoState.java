@@ -63,7 +63,7 @@ public class RobotAutoState extends StageState {
         seenConeLine = false;
         recognizedSignal = "";
 
-        PIDFCoefficients rangeSensorPIDValues = RobotProperties.getPIDCoefficients("rangeSensorController", new PIDFCoefficients(0.1, 0.0, 0.0, 0.0));
+        PIDFCoefficients rangeSensorPIDValues = RobotProperties.getPIDCoefficients("rangeSensorController", new PIDFCoefficients(0.11, 0.0, 0.0, 0.0));
         RobotAutoState.rangeSensorController = new ProfiledPIDController(
                 rangeSensorPIDValues.p,
                 rangeSensorPIDValues.i,

@@ -44,13 +44,14 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.goRightToWall)
         .nextStage(AutoStages.goForwardToConeStackWithStartingCone)
         .nextStage(AutoStages.findConeLinePosition)
-        .nextStage(AutoStages.strafeToBigPole)
+        .nextStage(AutoStages.goForwardpaststack)
+        .nextStage(AutoStages.strafeToBigPoleWithStartingCone)
         .nextStage(AutoStages.raiseConeToPole)
         .nextStage(AutoStages.lowerStartingConeOntoPole)
         .nextStage(AutoStages.openClawWithStartingCone)
         .nextStage(AutoStages.strafeHalfBack)
-        .nextStage(AutoStages.goBackToConeStackPart1)
-        .nextStage(AutoStages.goBackToConeStackPart2)
+        .nextStage(AutoStages.goBackToConeStack)
+        //.nextStage(AutoStages.goBackToConeStackPart2)
 
 
         .nextStage(AutoStages.grabCone)
@@ -59,7 +60,7 @@ public class ConePlaceAuto extends LinearOpMode {
         .nextStage(AutoStages.lowerStartingConeOntoPole)
         .nextStage(AutoStages.openClawWithStartingCone)
         .nextStage(AutoStages.strafeHalfBack)
-        .nextStage(AutoStages.goBackToConeStackPart1);
+        .nextStage(AutoStages.goBackToConeStack);
 
 
         AutoStages.goToZone1.nextStage(AutoStages.backupIntoZoneSlightly);

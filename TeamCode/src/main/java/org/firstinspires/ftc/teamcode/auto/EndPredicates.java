@@ -66,4 +66,11 @@ public class EndPredicates {
         }
         return false;
     };
+
+    public static final Predicate<RobotAutoState> slideIsEndPredicate = autoState -> {
+        if(autoState.caiden.horizIsInPosition()) {
+            return true;
+        }
+        return false;
+    };
 }

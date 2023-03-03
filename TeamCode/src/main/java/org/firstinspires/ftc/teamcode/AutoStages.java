@@ -45,9 +45,10 @@ public class AutoStages {
                 -autoState.power - autoState.pivot,
                 -autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
-        autoState.caiden.goToLowElevatorPosition();
+
         autoState.caiden.lazyS();
-        autoState.caiden.closeClaw();
+        autoState.caiden.goToLowElevatorPosition();
+
     };
 
     // Cone auto
@@ -94,6 +95,7 @@ public class AutoStages {
             .setIsEndPredicate(forwardControllerIsEndPredicate);
 
     public static final Stage<RobotAutoState> goForwardToConeStackWithStartingCone = new Stage<RobotAutoState>("Go forward to cone stack holding starting cone", autoState -> {
+        autoState.caiden.goToLowElevatorPosition();
 
         autoState.power = Range.clip(RobotAutoState.forwardController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.7, 0.7);
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
@@ -102,11 +104,21 @@ public class AutoStages {
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.goToLowElevatorPosition();
-        autoState.caiden.lazyS();
-        autoState.caiden.closeClaw();
     })
             .setStartAction(autoState -> autoState.distance = 1700)
+            .setIsEndPredicate(forwardControllerIsEndPredicate);
+
+    public static final Stage<RobotAutoState> goForwardpaststack = new Stage<RobotAutoState>("Go forward to cone stack holding starting cone", autoState -> {
+        autoState.caiden.goToLowElevatorPosition();
+        autoState.power = Range.clip(RobotAutoState.forwardController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.7, 0.7);
+        autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
+        autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
+                autoState.power - autoState.pivot,
+                autoState.power + autoState.pivot,
+                autoState.power - autoState.pivot);
+
+    })
+            .setStartAction(autoState -> autoState.distance = autoState.caiden.getFRMotorCount() + 22)
             .setIsEndPredicate(forwardControllerIsEndPredicate);
 
 
@@ -147,7 +159,6 @@ public class AutoStages {
             autoState.caiden.goToElevatorPosition(autoState.coneHeight[autoState.currentCone]);
         } else {
             autoState.caiden.goToLowElevatorPosition();
-            autoState.caiden.closeClaw();
 
         }
 
@@ -186,7 +197,7 @@ public class AutoStages {
         autoState.caiden.closeClaw();
     };
     public static final Consumer<RobotAutoState> actionStrafeToBigPoleWithStartingCone = autoState -> {
-        autoState.power = Range.clip(RobotAutoState.strafeController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.5, 0.5);
+        autoState.power = Range.clip(RobotAutoState.strafeController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.8, 0.8);
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
         autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
                 -autoState.power - autoState.pivot,
@@ -207,9 +218,12 @@ public class AutoStages {
                 autoState.power - autoState.pivot);
 
         autoState.caiden.horizontalSlideIn();
-        autoState.caiden.goToLowElevatorPosition();
+        //autoState.caiden.goToLowElevatorPosition();
         autoState.caiden.lazyR();
         autoState.caiden.openClaw();
+        if(autoState.stageElapsedTime.milliseconds()<500){autoState.caiden.goToHighElevatorPosition();} else if (autoState.stageElapsedTime.milliseconds()>500) {autoState.caiden.goToLowElevatorPosition();}
+
+
     };
 
     public static final Consumer<RobotAutoState> actionRaiseToBigPole = autoState -> {
@@ -221,16 +235,28 @@ public class AutoStages {
                 autoState.power - autoState.pivot);
 
         autoState.caiden.goToHighElevatorPosition();
-        autoState.caiden.horizontalSlideOutKinda();
         autoState.caiden.lazyS();
-        autoState.caiden.closeClaw();
+
+        if(autoState.stageElapsedTime.milliseconds()>300){autoState.caiden.horizontalSlideOutKinda();}
     };
-    public static final Stage<RobotAutoState> strafeToBigPole = new Stage<>("Strafe to big pole with starting cone", actionStrafeToBigPoleWithStartingCone)
+    public static final Stage<RobotAutoState> strafeToBigPoleWithStartingCone = new Stage<>("Strafe to big pole with starting cone", actionStrafeToBigPoleWithStartingCone)
+
+            .setStartAction(autoState -> {
+                autoState.caiden.resetDrivetrain();
+                autoState.distance = 1670;
+                autoState.caiden.changeoffset(-5);
+                autoState.caiden.goToLowElevatorPosition();
+
+            })
+
+            .setIsEndPredicate(strafeControllerIsEndPredicate);
+
+    public static final Stage<RobotAutoState> strafeToBigPoleWithCone = new Stage<>("Strafe to big pole with starting cone", actionStrafeToBigPoleWithStartingCone)
 
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
                 autoState.caiden.lazyS();
-                autoState.distance = 1685;
+                autoState.distance = 1750;
             })
 
             .setIsEndPredicate(strafeControllerIsEndPredicate);
@@ -240,6 +266,7 @@ public class AutoStages {
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
                 autoState.distance = -800;
+
             })
 
             .setIsEndPredicate(robotAutoState -> RobotAutoState.strafeController.atSetPoint());
@@ -247,7 +274,7 @@ public class AutoStages {
             .setStartAction(autoState -> {
                 autoState.caiden.resetDrivetrain();
                 autoState.caiden.lazyS();
-                autoState.distance = 1650;
+                autoState.distance = 1785;
             }).setIsEndPredicate(strafeControllerIsEndPredicate);
 
     public static final Consumer<RobotAutoState> actionLowerConeOntoPole = autoState -> {
@@ -263,8 +290,6 @@ public class AutoStages {
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.lazyS();
-        autoState.caiden.closeClaw();
     };
 
     public static final Stage<RobotAutoState> lowerStartingConeOntoPole = new Stage<>("Lower starting cone onto pole", actionLowerConeOntoPole)
@@ -276,7 +301,7 @@ public class AutoStages {
     public static final Stage<RobotAutoState> lowerConeOntoPole = new Stage<>("Lower cone onto pole", actionLowerConeOntoPole)
             .setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 600);
 
-    public static final Consumer<RobotAutoState> actionOpenClaw = autoState -> {
+    public static final Consumer<RobotAutoState>   actionOpenClaw = autoState -> {
         autoState.power = Range.clip(RobotAutoState.forwardController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.6, 0.6);
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
         autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
@@ -285,8 +310,8 @@ public class AutoStages {
                 autoState.power - autoState.pivot);
 
         autoState.caiden.goToElevatorPosition(900);
-        autoState.caiden.lazyS();
         autoState.caiden.openClaw();
+
     };
 
 
@@ -308,6 +333,7 @@ public class AutoStages {
         autoState.caiden.goToLowElevatorPosition();
         autoState.caiden.lazyR();
         autoState.caiden.openClaw();
+
     }).setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 700);
 
     public static final Stage<RobotAutoState> goBackToConeStackPart1 = new Stage<RobotAutoState>("Go back to cone stack part 1", autoState -> {
@@ -340,13 +366,13 @@ public class AutoStages {
             .setIsEndPredicate(robotAutoState -> robotAutoState.caiden.getFRMotorCount() < -1400);
     public static final Stage<RobotAutoState> goBackToConeStackPart2 = new Stage<RobotAutoState>("Go back to cone stack part 2", autoState -> {
         double measuredDistance = autoState.caiden.getDistance();
-        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
-        autoState.telemetry.addData("Measured Distance", measuredDistance);
-        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
-        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
+//        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
+//        autoState.telemetry.addData("Measured Distance", measuredDistance);
+//        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
+//        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
         autoState.power = Range.clip(RobotAutoState.rangeSensorController.calculate(measuredDistance), -0.7, 0.7);
 //        autoState.telemetry.addData("At Goal", RobotAutoState.rangeSensorController.atGoal());
-        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
+//        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
         autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
                 -autoState.power - autoState.pivot,
@@ -386,23 +412,23 @@ public class AutoStages {
     }).setIsEndPredicate(autoState -> autoState.stageElapsedTime.milliseconds() > 1000);
 
 
-    public static final Stage<RobotAutoState> findConeLinePosition = new Stage<RobotAutoState>("Fine cone line position", autoState -> {
+
+    public static final Stage<RobotAutoState>   findConeLinePosition = new Stage<RobotAutoState>("Fine cone line position", autoState -> {
         if (seeingConeLine() && !autoState.seenConeLine) {
             autoState.seenConeLine = true;
         } else if (autoState.seenConeLine && !seeingConeLine()) {
-            autoState.distance = autoState.caiden.getFRMotorCount() + 63;
+            autoState.distance = autoState.caiden.getFRMotorCount()-5;
             autoState.shouldEnd = true;
         }
+        autoState.caiden.goToLowElevatorPosition();
 
+        //autoState.power = Range.clip(RobotAutoState.forwardController.calculate(autoState.caiden.getFRMotorCount(), autoState.distance), -0.7, 0.7);
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
         autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot,
                 autoState.power + autoState.pivot,
                 autoState.power - autoState.pivot);
 
-        autoState.caiden.goToLowElevatorPosition();
-        autoState.caiden.lazyS();
-        autoState.caiden.closeClaw();
 
     }).setStartAction(elapsed -> state.power = 0.2).setIsEndPredicate(robotStateIsEndPredicate);
 
@@ -410,9 +436,7 @@ public class AutoStages {
     // Should have 1-2 second timeout
     public static final Stage<RobotAutoState> recognizeSignalWithTimeout = new Stage<RobotAutoState>("Recognize signal with timeout", autoState -> {
 
-
         autoState.caiden.goToLowElevatorPosition();
-        autoState.caiden.closeClaw();
 
 
 
@@ -502,4 +526,33 @@ public class AutoStages {
         autoState.caiden.reset();
         autoState.distance = -300;
     });
+
+    public static final Stage<RobotAutoState> goBackToConeStack = new Stage<RobotAutoState>("Go back to cone stack", autoState -> {
+        double measuredDistance = autoState.caiden.getDistance();
+//        autoState.telemetry.addData("Target Distance", autoState.distanceToWall);
+//        autoState.telemetry.addData("Measured Distance", measuredDistance);
+//        autoState.telemetry.addData("Setpoint Position", RobotAutoState.rangeSensorController.getSetpoint().position);
+//        autoState.telemetry.addData("Goal Position", RobotAutoState.rangeSensorController.getGoal().position);
+        autoState.power = Range.clip(RobotAutoState.rangeSensorController.calculate(measuredDistance), -0.7, 0.7);
+//        autoState.telemetry.addData("At Goal", RobotAutoState.rangeSensorController.atGoal());
+//        autoState.telemetry.addData("Position Error", RobotAutoState.rangeSensorController.getPositionError());
+        autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.5, 0.5);
+        autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
+                -autoState.power - autoState.pivot,
+                -autoState.power + autoState.pivot,
+                autoState.power - autoState.pivot);
+
+
+        autoState.caiden.horizontalSlideIn();
+        autoState.caiden.goToElevatorPosition(autoState.coneHeight[autoState.currentCone]);
+    })
+            .setStartAction(autoState -> {
+                autoState.currentCone++;
+
+                autoState.distanceToWall = RobotProperties.getDoubleValue("autoDistanceToCones", 7.0);
+                RobotAutoState.rangeSensorController.reset(autoState.caiden.getDistance());
+                RobotAutoState.rangeSensorController.setGoal(autoState.distanceToWall);
+            })
+
+            .setIsEndPredicate(rangeControllerIsEndPredicate);
 }

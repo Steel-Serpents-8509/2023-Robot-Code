@@ -42,9 +42,7 @@ public class CaidenRobot {
     // State used for updating telemetry
     Orientation angles;
 
-    private double robotHeading  = 0;
     private double headingOffset = 0;
-    private double headingError  = 0;
 
     private final DcMotorEx BRMotor;
     private final DcMotorEx BLMotor;
@@ -217,7 +215,7 @@ public class CaidenRobot {
                 stopElevator = true;
                 targetElevatorPosition = lastElevatorPosition;
             }
-            lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, targetElevatorPosition), -.7, 1);
+            lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, targetElevatorPosition), -.3, 1);
         } else if((power < 0) && (lastElevatorPosition > 8)) {
             stopElevator = false;
             lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, 10), -0.7, 0);
@@ -240,8 +238,8 @@ public class CaidenRobot {
     }
 
     public void horizontalSlideOutKinda() {
-        HorizontalSlide.setPower(1);
-        HorizontalSlide.setTargetPosition(210);
+        HorizontalSlide.setPower(.75);
+        HorizontalSlide.setTargetPosition(217 );
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
     }
@@ -333,6 +331,9 @@ public class CaidenRobot {
         driveElevator(0);
     }
 
+    public void changeoffset(int change){
+        headingOffset = change;
+    }
     public void goToMediumElevatorPosition() {
         updateElevatorTargetPosition(MEDIUM_ELEVATOR_HEIGHT);
         driveElevator(0);
@@ -355,6 +356,12 @@ public class CaidenRobot {
         final int ELEVATOR_TOLERANCE = 30;
         return elevatorPosition > (targetElevatorPosition - ELEVATOR_TOLERANCE) &&
                 elevatorPosition < (targetElevatorPosition + ELEVATOR_TOLERANCE);
+    }
+    public boolean horizIsInPosition() {
+        double slidePosition = HorizontalSlide.getCurrentPosition();
+        final int SLIDE_TOLERANCE = 30;
+        return slidePosition > (HorizontalSlide.getTargetPosition() - SLIDE_TOLERANCE) &&
+                slidePosition < (HorizontalSlide.getTargetPosition() + SLIDE_TOLERANCE);
     }
     
     public void driveRawPower(double frontRightPower, double frontLeftPower, double backRightPower, double backLeftPower) {
@@ -450,19 +457,9 @@ public class CaidenRobot {
     }
     public double getCachedHeading() {
         if(angles == null) {
-            return getRawHeading();
+            return getRawHeading() + headingOffset;
         }
         return angles.firstAngle;
-    }
-
-    /**
-     * Reset the "offset" heading back to zero
-     */
-    public void resetHeading() {
-        // Save a new heading offset equal to the current raw heading.
-        headingOffset = getRawHeading();
-        robotHeading = 0;
-        
     }
     
     PIDFController armController = new PIDFController(0.5, 0.02, 0, 0);
@@ -501,7 +498,7 @@ public class CaidenRobot {
 //        //telemetry.addData("Magnet", Magnet.getValue());
 //        telemetry.addData(">", "Robot Heading = %4.0f", getRawHeading());
         getRawHeading();
-        telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
+//        telemetry.addData("Distance to r", distr.getDistance(DistanceUnit.CM));
 //        //telemetry.addData("arm desired pos", armPosition);
 //        //telemetry.addData("Red", colorSensor.red());
 //        //telemetry.addData("Blue", colorSensor.blue());
