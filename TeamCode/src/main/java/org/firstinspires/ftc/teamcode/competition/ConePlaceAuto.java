@@ -30,6 +30,7 @@ public class ConePlaceAuto extends LinearOpMode {
         caiden = new CaidenRobot(hardwareMap);
         caiden.closeClaw();
 
+
         //ButtonDebounce debounce = new ButtonDebounce();
         //AutoStages.sequencer.enableStageDebugging(() -> debounce.getButton(gamepad1.a));
 
@@ -121,7 +122,7 @@ public class ConePlaceAuto extends LinearOpMode {
 //        telemetry.addData("Auto Stage Time", AutoStages.sequencer.getTimeInStageMS());
 //        telemetry.addData("Power", AutoStages.state.power);
 //        telemetry.addData("Pivot", AutoStages.state.pivot);
-//        telemetry.addData("Recognized Signal", AutoStages.state.recognizedSignal);
+        telemetry.addData("Recognized Signal", AutoStages.state.recognizedSignal);
   //      telemetry.addData("Seeing Line", AutoStages.seeingConeLine());
     //    telemetry.addData("Seen Line", AutoStages.state.seenConeLine);
 //        telemetry.addData("Current Cone", AutoStages.state.currentCone);
