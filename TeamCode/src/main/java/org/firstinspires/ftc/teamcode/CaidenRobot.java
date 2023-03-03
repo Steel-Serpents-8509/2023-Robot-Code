@@ -277,10 +277,10 @@ public class CaidenRobot {
 
     }
 
-    public void lazyL() {
+    public void lazyL(double power) {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(leftLimit);
-            LazySohum.setPower(0.5);
+            LazySohum.setPower(power);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
 
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION && (Math.abs(LazySohum.getCurrentPosition() - leftLimit) > 150)) {
@@ -288,10 +288,13 @@ public class CaidenRobot {
             targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
         }
     }
-    public void lazyR () {
+    public void lazyL(){
+        lazyL(0.5);
+    }
+    public void lazyR (double power) {
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(rightLimit);
-            LazySohum.setPower(0.5);
+            LazySohum.setPower(power);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
 
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION && (Math.abs(LazySohum.getCurrentPosition() - rightLimit) > 150)) {
@@ -299,10 +302,13 @@ public class CaidenRobot {
             targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
         }
     }
-    public void lazyS(){
+    public void lazyR(){
+        lazyR(0.5);
+    }
+    public void lazyS(double power){
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(0);
-            LazySohum.setPower(0.5);
+            LazySohum.setPower(power);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
 
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION && (Math.abs(LazySohum.getCurrentPosition()) > 150)) {
@@ -310,7 +316,9 @@ public class CaidenRobot {
             targetElevatorPosition = SAFE_ELEVATOR_POSITION + 100;
         }
     }
-    
+    public void lazyS(){
+        lazyS(0.5);
+    }
     public void lazyGoToPosition(int position) {
         position = Range.clip(position, leftLimit, rightLimit);
         if(safeToMoveTurret()) {
@@ -353,7 +361,7 @@ public class CaidenRobot {
 
     public boolean elevatorIsInPosition() {
         double elevatorPosition = Slidey.getCurrentPosition();
-        final int ELEVATOR_TOLERANCE = 30;
+        final int ELEVATOR_TOLERANCE = 36;
         return elevatorPosition > (targetElevatorPosition - ELEVATOR_TOLERANCE) &&
                 elevatorPosition < (targetElevatorPosition + ELEVATOR_TOLERANCE);
     }
@@ -450,16 +458,16 @@ public class CaidenRobot {
      */
     public double getRawHeading() {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        return angles.firstAngle;
+        return angles.firstAngle + headingOffset;
     }
     public void resets() {
         HorizontalSlide.setPower(-.7);
     }
     public double getCachedHeading() {
         if(angles == null) {
-            return getRawHeading() + headingOffset;
+            return getRawHeading();
         }
-        return angles.firstAngle;
+        return angles.firstAngle + headingOffset;
     }
     
     PIDFController armController = new PIDFController(0.5, 0.02, 0, 0);

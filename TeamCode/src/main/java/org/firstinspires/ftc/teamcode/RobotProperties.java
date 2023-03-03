@@ -71,16 +71,19 @@ public class RobotProperties {
         }
     }
 
-    public static int getIntValue(String intName, int defaultValue) {
-        int ret;
+    private static int getInt(String name, int defaultValue) {
         try {
-            ret = Integer.parseInt((String)properties.get(VALUE_PREFIX + intName));
+            reloadData();
+            return Integer.parseInt((String)properties.get(VALUE_PREFIX + name));
         } catch (NumberFormatException | NullPointerException e) {
-            properties.setProperty(VALUE_PREFIX + intName, String.valueOf(defaultValue));
+            properties.setProperty(VALUE_PREFIX + name, String.valueOf(defaultValue));
             updateFile();
-            ret = defaultValue;
+            return defaultValue;
         }
-        return ret;
+    }
+
+    public static int getIntValue(String intName, int defaultValue) {
+        return getInt(VALUE_PREFIX + intName, defaultValue);
     }
 
     public static double getDoubleValue(String doubleName, double defaultValue) {
