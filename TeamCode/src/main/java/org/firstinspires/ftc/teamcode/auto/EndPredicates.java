@@ -49,7 +49,7 @@ public class EndPredicates {
             autoState.robotInPosition = true;
         } else if(!RobotAutoState.rangeSensorController.atGoal() && autoState.robotInPosition) {
             autoState.robotInPosition = false;
-        } else return RobotAutoState.rangeSensorController.atGoal() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 100;
+        } else return RobotAutoState.rangeSensorController.atGoal() && autoState.robotInPosition && autoState.stageElapsedTime.milliseconds() > 50;
         return false;
     };
 

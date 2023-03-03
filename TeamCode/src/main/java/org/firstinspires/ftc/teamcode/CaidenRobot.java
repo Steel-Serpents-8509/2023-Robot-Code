@@ -49,11 +49,9 @@ public class CaidenRobot {
     private final DcMotorEx FRMotor;
     private final DcMotorEx FLMotor;
 
-    private DcMotor headlightVoltage;
     private DcMotor LazySohum;
 
-    private DistanceSensor distr;
-    private ModernRoboticsI2cRangeSensor poleDistSensor;
+    private Rev2mDistanceSensorEx distr;
 
     public Servo Claw;
     public ColorSensor colorSensor;
@@ -69,8 +67,6 @@ public class CaidenRobot {
     private final PIDFCoefficients elevatorPIDFCoefficients;
     private final PIDFController elevatorController;
 
-    DistanceSensor distanceSensor;
-    DistanceSensor revDistanceSensor;
     boolean stopElevator = true;
     
     private DcMotorEx HorizontalSlide;
@@ -91,6 +87,8 @@ public class CaidenRobot {
 
     private double lastElevatorPower = 0.0;
     private int lastElevatorPosition = 0;
+
+    Turret_state turretState = Turret_state.NONE;
 
     public CaidenRobot(HardwareMap hardwareMap) {
         this(hardwareMap, true);
@@ -238,8 +236,8 @@ public class CaidenRobot {
     }
 
     public void horizontalSlideOutKinda() {
-        HorizontalSlide.setPower(.75);
-        HorizontalSlide.setTargetPosition(245);
+        HorizontalSlide.setPower(1);
+        HorizontalSlide.setTargetPosition(290);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
     }
@@ -278,6 +276,10 @@ public class CaidenRobot {
     }
 
     public void lazyL(double power) {
+        if(turretState == Turret_state.LEFT) {
+            return;
+        }
+        turretState = Turret_state.LEFT;
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(leftLimit);
             LazySohum.setPower(power);
@@ -292,6 +294,10 @@ public class CaidenRobot {
         lazyL(0.5);
     }
     public void lazyR (double power) {
+        if(turretState == Turret_state.RIGHT) {
+            return;
+        }
+        turretState = Turret_state.RIGHT;
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(rightLimit);
             LazySohum.setPower(power);
@@ -306,6 +312,10 @@ public class CaidenRobot {
         lazyR(0.5);
     }
     public void lazyS(double power){
+        if(turretState == Turret_state.FORWARD) {
+            return;
+        }
+        turretState = Turret_state.FORWARD;
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(0);
             LazySohum.setPower(power);
@@ -517,4 +527,9 @@ public class CaidenRobot {
     public int getFRMotorCount() {
        return FRMotor.getCurrentPosition(); 
     }
+
+    public void disableRangeSensor() {
+        distr.resetDeviceConfigurationForOpMode();
+    }
+
 }

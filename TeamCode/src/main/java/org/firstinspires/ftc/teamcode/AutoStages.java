@@ -190,7 +190,7 @@ public class AutoStages {
         autoState.caiden.closeClaw();
     };
     public static final Consumer<RobotAutoState> actionStrafeToBigPole = autoState -> {
-        autoState.power = Range.clip(RobotAutoState.profiledStrafeController.calculate(autoState.caiden.getFRMotorCount()), -0.8, 0.8);
+        autoState.power = Range.clip(RobotAutoState.profiledStrafeController.calculate(autoState.caiden.getFRMotorCount()), -0.7, 0.7);
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -0.8, 0.8);
         autoState.caiden.driveRawPowerInAuto(autoState.power + autoState.pivot,
                 -autoState.power - autoState.pivot,
@@ -268,7 +268,8 @@ public class AutoStages {
             })
 
             .setIsEndPredicate(robotAutoState -> robotAutoState.caiden.getFRMotorCount() < -1400);
-    public static final Stage<RobotAutoState> strafeToPoleFromStack = new Stage<>("Strafe to big Pole", actionStrafeToBigPole)
+    public static final Stage<RobotAutoState>
+            strafeToPoleFromStack = new Stage<>("Strafe to big Pole", actionStrafeToBigPole)
             .setStartAction(autoState -> {
                         autoState.caiden.resetDrivetrain();
                         RobotAutoState.profiledStrafeController.setGoal(1800.0);
@@ -421,7 +422,7 @@ public class AutoStages {
         if (seeingConeLine() && !autoState.seenConeLine) {
             autoState.seenConeLine = true;
         } else if (autoState.seenConeLine && !seeingConeLine()) {
-            autoState.distance = autoState.caiden.getFRMotorCount();
+            autoState.distance = autoState.caiden.getFRMotorCount() + RobotProperties.getIntValue("GoForwardPastLineCount", 80);
             autoState.shouldEnd = true;
         }
         autoState.caiden.goToLowElevatorPosition();
@@ -552,7 +553,8 @@ public class AutoStages {
         autoState.pivot = Range.clip(RobotAutoState.anglePID.calculate(autoState.caiden.getCachedHeading(), autoState.heading), -1, 1);
         double offset;
         if(measuredDistance > 10) {
-            offset = -0.06;
+            //offset = -0.06;
+            offset = 0;
         } else {
             offset = 0;
         }

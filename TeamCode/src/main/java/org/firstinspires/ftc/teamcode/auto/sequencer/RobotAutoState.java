@@ -24,7 +24,7 @@ public class RobotAutoState extends StageState {
     public static ProfiledPIDController rangeSensorController;
     public static ProfiledPIDController profiledForwardController;
     public static ProfiledPIDController profiledStrafeController;
-    public static final PIDController anglePID = new PIDController(0.027, 0.006, 0.002);
+    public static PIDController anglePID;
 
     public double power;
     public double pivot;
@@ -62,6 +62,11 @@ public class RobotAutoState extends StageState {
         shouldEnd = false;
         seenConeLine = false;
         recognizedSignal = "";
+
+        PIDFCoefficients anglePIDValues = RobotProperties.getPIDCoefficients("angle", new PIDFCoefficients(0.023, 0.006, 0.002, 0.0));
+
+        anglePID = new PIDController(anglePIDValues.p, anglePIDValues.i, anglePIDValues.d);
+
 
         PIDFCoefficients rangeSensorPIDValues = RobotProperties.getPIDCoefficients("rangeSensorController", new PIDFCoefficients(0.11, 0.0, 0.0, 0.0));
         RobotAutoState.rangeSensorController = new ProfiledPIDController(
