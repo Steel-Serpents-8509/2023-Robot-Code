@@ -61,7 +61,7 @@ public class EndPredicates {
         return false;
     };
     public static final Predicate<RobotAutoState> elevatorIsEndPredicate = autoState -> {
-        if(autoState.caiden.elevatorIsInPosition()) {
+        if(autoState.caiden.elevatorIsInPosition() || autoState.stageElapsedTime.milliseconds()>400) {
             return true;
         }
         return false;

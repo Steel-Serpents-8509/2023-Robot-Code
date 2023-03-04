@@ -487,7 +487,7 @@ public class AutoStages {
         autoState.caiden.lazyR();
     }).setStartAction(autoState -> {
         autoState.caiden.reset();
-        RobotAutoState.profiledStrafeController.setGoal(2400.0);
+        RobotAutoState.profiledStrafeController.setGoal(2300.0);
         RobotAutoState.profiledStrafeController.reset(0);
     }).setFinishAction(autoState -> autoState.caiden.reset()).setIsEndPredicate(profiledStrafeControllerIsEndPredicate);
 
@@ -535,6 +535,7 @@ public class AutoStages {
                 autoState.power - autoState.pivot);
 
         autoState.caiden.goToElevatorPosition(0);
+        autoState.caiden.lazyS();
 
     }).setStartAction(autoState -> {
         autoState.caiden.resetDrivetrain();
