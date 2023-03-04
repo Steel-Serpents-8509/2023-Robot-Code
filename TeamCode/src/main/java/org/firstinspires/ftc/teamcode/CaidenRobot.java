@@ -260,6 +260,14 @@ public class CaidenRobot {
 
     }
 
+    public void horizontalSlideOutToConeStack() {
+        horz_slide_state = HORZ_SLIDE_STATE.NONE;
+        HorizontalSlide.setPower(1);
+        HorizontalSlide.setTargetPosition(100);
+        HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
+
+    }
+
     public void horizontalSlideIn() {
         if(horz_slide_state == HORZ_SLIDE_STATE.IN) {
             return;
