@@ -49,7 +49,7 @@ public class RobotAutoState extends StageState {
     public  String recognizedSignal = "";
     
     //                          cone5,  cone4, etc
-    public int[] coneHeight = {155, 115, 95, 53,  0};
+    public int[] coneHeight = {150, 110, 93, 53,  0};
     public int currentCone = -1;
     public int maxCone = 2;
     
@@ -90,5 +90,4 @@ public class RobotAutoState extends StageState {
                         RobotProperties.getDoubleValue("forwardProfileAcceleration", 750)));
 
     }
-    
 }

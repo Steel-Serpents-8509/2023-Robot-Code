@@ -214,7 +214,7 @@ public class CaidenRobot {
                 stopElevator = true;
                 targetElevatorPosition = lastElevatorPosition;
             }
-            lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, targetElevatorPosition), -.6, 1);
+            lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, targetElevatorPosition), -0.6, 1);
         } else if((power < 0) && (lastElevatorPosition > 8)) {
             stopElevator = false;
             lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, 10), -0.7, 0);
@@ -243,7 +243,7 @@ public class CaidenRobot {
 
         horz_slide_state = HORZ_SLIDE_STATE.OUT;
         HorizontalSlide.setPower(1);
-        HorizontalSlide.setTargetPosition(290);
+        HorizontalSlide.setTargetPosition(250);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
     }
@@ -255,7 +255,7 @@ public class CaidenRobot {
 
         horz_slide_state = HORZ_SLIDE_STATE.KINDA;
         HorizontalSlide.setPower(1);
-        HorizontalSlide.setTargetPosition(280);
+        HorizontalSlide.setTargetPosition(295);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
     }
@@ -550,6 +550,12 @@ public class CaidenRobot {
     public int getFRMotorCount() {
        return FRMotor.getCurrentPosition(); 
     }
+
+
+    public double getFRMotorVelocity() {
+        return FRMotor.getVelocity();
+    }
+
 
     public void disableRangeSensor() {
         distr.resetDeviceConfigurationForOpMode();

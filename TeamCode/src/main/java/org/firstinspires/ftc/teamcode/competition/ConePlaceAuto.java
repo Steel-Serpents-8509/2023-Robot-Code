@@ -98,7 +98,7 @@ public class ConePlaceAuto extends LinearOpMode {
         RobotAutoState.profiledStrafeController.setTolerance(29);
 
         RobotAutoState.anglePID.setTolerance(2);
-        RobotAutoState.rangeSensorController.setTolerance(1.6);
+        RobotAutoState.rangeSensorController.setTolerance(1.4);
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Starting Auto Stage", AutoStages.sequencer.getCurrentStageName());
         telemetry.update();
