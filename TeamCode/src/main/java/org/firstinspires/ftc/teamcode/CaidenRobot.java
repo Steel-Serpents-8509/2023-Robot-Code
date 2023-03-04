@@ -27,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.tensorflow.lite.task.vision.segmenter.OutputType;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -213,7 +214,7 @@ public class CaidenRobot {
                 stopElevator = true;
                 targetElevatorPosition = lastElevatorPosition;
             }
-            lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, targetElevatorPosition), -.3, 1);
+            lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, targetElevatorPosition), -.6, 1);
         } else if((power < 0) && (lastElevatorPosition > 8)) {
             stopElevator = false;
             lastElevatorPower = Range.clip(elevatorController.calculate(lastElevatorPosition, 10), -0.7, 0);
@@ -227,8 +228,20 @@ public class CaidenRobot {
 
     }
 
+    enum HORZ_SLIDE_STATE {
+        OUT,
+        IN,
+        KINDA,
+        NONE
+    }
 
+    private HORZ_SLIDE_STATE horz_slide_state = HORZ_SLIDE_STATE.NONE;
     public void horizontalSlideOut() {
+        if(horz_slide_state == HORZ_SLIDE_STATE.OUT) {
+            return;
+        }
+
+        horz_slide_state = HORZ_SLIDE_STATE.OUT;
         HorizontalSlide.setPower(1);
         HorizontalSlide.setTargetPosition(290);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
@@ -236,13 +249,23 @@ public class CaidenRobot {
     }
 
     public void horizontalSlideOutKinda() {
+        if(horz_slide_state == HORZ_SLIDE_STATE.KINDA) {
+            return;
+        }
+
+        horz_slide_state = HORZ_SLIDE_STATE.KINDA;
         HorizontalSlide.setPower(1);
-        HorizontalSlide.setTargetPosition(290);
+        HorizontalSlide.setTargetPosition(280);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
 
     }
 
     public void horizontalSlideIn() {
+        if(horz_slide_state == HORZ_SLIDE_STATE.IN) {
+            return;
+        }
+
+        horz_slide_state = HORZ_SLIDE_STATE.IN;
         HorizontalSlide.setPower(-1);
         HorizontalSlide.setTargetPosition(0);
         HorizontalSlide.setMode(RunMode.RUN_TO_POSITION);
@@ -279,11 +302,11 @@ public class CaidenRobot {
         if(turretState == Turret_state.LEFT) {
             return;
         }
-        turretState = Turret_state.LEFT;
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(leftLimit);
             LazySohum.setPower(power);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
+            turretState = Turret_state.LEFT;
 
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION && (Math.abs(LazySohum.getCurrentPosition() - leftLimit) > 150)) {
             LazySohum.setPower(0);
@@ -297,11 +320,11 @@ public class CaidenRobot {
         if(turretState == Turret_state.RIGHT) {
             return;
         }
-        turretState = Turret_state.RIGHT;
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(rightLimit);
             LazySohum.setPower(power);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
+            turretState = Turret_state.RIGHT;
 
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION && (Math.abs(LazySohum.getCurrentPosition() - rightLimit) > 150)) {
             LazySohum.setPower(0);
@@ -315,11 +338,11 @@ public class CaidenRobot {
         if(turretState == Turret_state.FORWARD) {
             return;
         }
-        turretState = Turret_state.FORWARD;
         if(safeToMoveTurret()) {
             LazySohum.setTargetPosition(0);
             LazySohum.setPower(power);
             LazySohum.setMode(RunMode.RUN_TO_POSITION);
+            turretState = Turret_state.FORWARD;
 
         } else if(targetElevatorPosition < SAFE_ELEVATOR_POSITION && (Math.abs(LazySohum.getCurrentPosition()) > 150)) {
             LazySohum.setPower(0);
